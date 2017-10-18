@@ -33,8 +33,13 @@ class Acl {
    * @param {Boolean} test=true
    */
   rule(verbs, subject, test = true) {
+    const verbs_ = Array.isArray(verbs) ? verbs : [verbs]
     const subject_ = this.subjectMapper(subject)
-    verbs.forEach(verb => this.rules.set(subject_, {[verb]: test}))
+    verbs_.forEach(verb => {
+      const rules = this.rules.get(subject_) || {}
+      rules[verb] = test
+      this.rules.set(subject_, rules)
+    })
     return this
   }
 
