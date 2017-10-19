@@ -1,5 +1,6 @@
 {
   "name": "browser-acl",
+  "description": "Simple ACL library for the browser inspired by Laravel's guards and policies.",
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
