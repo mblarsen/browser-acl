@@ -6,7 +6,10 @@
   "scripts": {
     "test": "cp .babelrc-test .babelrc && jest",
     "watch": "cp .babelrc-test .babelrc && jest --watchAll",
-    "build": "rm .babelrc ; poi build"
+    "build": "rm .babelrc ; poi build",
+    "preversion": "npm run test",
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
   },
   "license": "MIT",
   "devDependencies": {
