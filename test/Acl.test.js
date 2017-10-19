@@ -54,6 +54,13 @@ test('Can eat apples (Object)', () => {
   expect(user.can('eat', new Apple())).toBe(true)
 })
 
+test('Throws on strict', () => {
+  const acl = new Acl({strict: true})
+  acl.mixin(User)
+  const user = new User()
+  expect(user.can.bind(user, 'eat', new Apple())).toThrow('Unknown verb "eat"')
+})
+
 test('Can create jobs complex', () => {
   const acl = new Acl()
   acl.mixin(User)
