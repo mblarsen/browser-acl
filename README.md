@@ -20,7 +20,7 @@ const acl = new Acl()
 
 // Attach acl function to user class/constructor
 // Adds: user.can() function
-acl.attach(User)
+acl.mixin(User)
 
 acl.rule('view', Post)
 acl.rule(['edit', 'delete'], Post, (user, post) => post.id === user.id)
