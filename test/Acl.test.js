@@ -1,4 +1,4 @@
-import Acl from '../'
+import Acl from '../index.js'
 
 class User {}
 class Apple {}
