@@ -59,17 +59,10 @@ class Acl {
    */
   can(user, verb, subject) {
     const subject_ = this.subjectMapper(subject)
-    const policy = this.policies.get(subject_)
-
-    if (policy) {
-      return Boolean(policy[verb](user, subject))
-    }
-
-    const rules = this.rules.get(subject_) || {}
+    const rules = this.policies.get(subject_) || this.rules.get(subject_) || {}
     if (typeof rules[verb] === 'function') {
       return Boolean(rules[verb](user, subject, subject_))
     }
-
     return Boolean(rules[verb])
   }
 }
