@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "watch": "jest --watchAll"
+    "test": "cp .babelrc-test .babelrc && jest",
+    "watch": "cp .babelrc-test .babelrc && jest --watchAll",
+    "build": "rm .babelrc ; poi build"
   },
   "license": "MIT",
   "devDependencies": {
