@@ -16,7 +16,6 @@ yarn add browser-acl
 
 ```javascript
 import Acl from 'browser-acl'
-
 const acl = new Acl()
 
 // Attach acl function to user class/constructor
@@ -27,7 +26,24 @@ acl.rule('view', Post)
 acl.rule(['edit', 'delete'], Post, (user, post) => post.id === user.id)
 
 if (user.can('edit', post)) {
-  // only users with permission
+  // code for when user has permission
 }
 ```
+
+Policies are also supported:
+
+```javascript
+acl.policy({
+    view: () => true,
+    edit: (user, post) => post.id === user.id),
+}, Post)
+
+if (user.can('edit', post)) {
+  // code for when user has permission
+}
+```
+Note: policies takes precedence over rules.
+
+# API
+
 
