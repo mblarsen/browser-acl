@@ -116,6 +116,18 @@ describe('Multiple', () => {
     rotten.rotten = true
     expect(user.can.some('eat', [fine, rotten])).toBe(true)
   })
+
+  test('User can eat some apples', () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
+    const user = new User()
+    const fine = new Apple()
+    const rotten = new Apple()
+    rotten.rotten = true
+    expect(user.can.every('eat', [fine, rotten])).toBe(false)
+    expect(user.can.every('eat', [fine, new Job()])).toBe(false)
+  })
 })
 
 describe('Strict mode', () => {
@@ -210,5 +222,14 @@ describe('More complex cases', () => {
 
     expect(owner.can('view', job)).toBe(true)
     expect(coworker.can('view', job)).toBe(true)
+  })
+  test('Policy newed', () => {
+    const acl = new Acl()
+    function JobPolicy() {
+      this.view = true
+    }
+    acl.policy(JobPolicy, Job)
+    expect(acl.policies.get('Job')).toBeInstanceOf(JobPolicy)
+    expect(acl.can({}, 'view', new Job())).toBe(true)
   })
 })

@@ -72,7 +72,7 @@ class Acl {
   policy(policy, subject) {
     const policy_ = typeof policy === 'function' ? new policy() : policy
     const subjectName = this.subjectMapper(subject)
-    this.policies.set(subjectName, policy)
+    this.policies.set(subjectName, policy_)
     return this
   }
 
