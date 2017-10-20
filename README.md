@@ -54,6 +54,7 @@ Note: policies takes precedence over rules.
 -   [Acl](#acl)
     -   [rule](#rule)
     -   [policy](#policy)
+    -   [register](#register)
     -   [can](#can)
     -   [some](#some)
     -   [every](#every)
@@ -106,6 +107,22 @@ Policies are useful for grouping rules and adding more comples logic.
 -   `subject` **([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))**
 
 Returns **[Acl](#acl)**
+
+### register
+
+Explicitly map a class or constructor function to a name.
+
+You would want to do this in case your code is heavily
+minified in which case the default mapper cannot use the
+simple "reflection" to resolve the subject name.
+
+Note: If you override the subjectMapper this is not used,
+bud it can be used manually through `this.registry`.
+
+**Parameters**
+
+-   `object` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** A class or constructor function
+-   `subjectName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 ### can
 
@@ -209,6 +226,9 @@ to indicate the "class" of the object.
 ```
 
 `can` will now use this function when you pass in your objects.
+
+See [register()](#register) for how to manually map
+classes to subject name.
 
 **Parameters**
 

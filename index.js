@@ -15,6 +15,7 @@ class Acl {
     this.strict = strict
     this.rules = new Map()
     this.policies = new Map()
+    this.registry = new WeakMap()
   }
 
   /**
@@ -73,6 +74,25 @@ class Acl {
     const policy_ = typeof policy === 'function' ? new policy() : policy
     const subjectName = this.subjectMapper(subject)
     this.policies.set(subjectName, policy_)
+    return this
+  }
+
+  /**
+   * Explicitly map a class or constructor function to a name.
+   *
+   * You would want to do this in case your code is heavily
+   * minified in which case the default mapper cannot use the
+   * simple "reflection" to resolve the subject name.
+   *
+   * Note: If you override the subjectMapper this is not used,
+   * bud it can be used manually through `this.registry`.
+   *
+   * @access public
+   * @param {Function} object A class or constructor function
+   * @param {string} subjectName
+   */
+  register(object, subjectName) {
+    this.registry.set(object, subjectName)
     return this
   }
 
@@ -186,6 +206,7 @@ class Acl {
     User.prototype.can.some = function () {
       return acl.some(this, ...arguments)
     }
+    return this
   }
 
   /**
@@ -205,10 +226,13 @@ class Acl {
    * to indicate the "class" of the object.
    *
    * ```javascript
-   *   acl.subjectMapper = subject => subject.type
+   *   acl.subjectMapper = s => typeof s === 'string' ? s : s.type
    * ```
    *
    * `can` will now use this function when you pass in your objects.
+   *
+   * See {@link #register register()} for how to manually map
+   * classes to subject name.
    *
    * @access public
    * @param {Function|Object|string} subject
@@ -216,6 +240,7 @@ class Acl {
    */
   subjectMapper(subject) {
     if (typeof subject === 'string') { return subject }
+    if (this.registry.has(subject.constructor)) { return this.registry.get(subject.constructor) }
     return typeof subject === 'function'
       ? subject.name
       : subject.constructor.name
