@@ -117,7 +117,7 @@ describe('Multiple', () => {
     expect(user.can.some('eat', [fine, rotten])).toBe(true)
   })
 
-  test('User can eat some apples', () => {
+  test('User can eat every apple', () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
