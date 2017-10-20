@@ -104,9 +104,10 @@ class Acl {
    * @param {Object} user
    * @param {string} verb
    * @param {Function|Object|string} subject
+   * @param {...*} args Any other param is passed into rule
    * @return Boolean
    */
-  can(user, verb, subject) {
+  can(user, verb, subject, ...args) {
     const subjectName = this.subjectMapper(subject)
     let rules = this.policies.get(subjectName) || this.rules.get(subjectName)
 
@@ -118,7 +119,7 @@ class Acl {
     }
 
     if (typeof rules[verb] === 'function') {
-      return Boolean(rules[verb](user, subject, subjectName))
+      return Boolean(rules[verb](user, subject, subjectName, ...args))
     }
 
     if (this.strict && typeof rules[verb] === 'undefined') {

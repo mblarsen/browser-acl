@@ -54,6 +54,17 @@ describe('The basics', () => {
     const user = new User()
     expect(user.can('eat', new Apple())).toBe(true)
   })
+
+  test('Can eat apples (params)', () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule(['eat'], Apple, function (user, apple, _, param) {
+      expect(param).toBe('worm')
+      return true
+    })
+    const user = new User()
+    expect(user.can('eat', new Apple(), 'worm')).toBe(true)
+  })
 })
 
 describe('Strict mode', () => {
