@@ -1,7 +1,11 @@
+/**
+ * Simple ACL library for the browser inspired by Laravel's guards and policies.
+ * @class Acl
+ */
 class Acl {
 
   /**
-   * constructor
+   * browser-acl
    *
    * @access public
    * @param {Boolean} {strict=false}={} Errors out on unknown verbs when true
@@ -11,53 +15,6 @@ class Acl {
     this.strict = strict
     this.rules = new Map()
     this.policies = new Map()
-  }
-
-  /**
-   * Mix in augments your user class with a `can` function. This
-   * is optional and you can always cann `can` directly on your
-   * Acl instance.
-   *
-   * @access public
-   * @param {Object} userClass A user class or contructor function
-   */
-  mixin(userClass) {
-    const acl = this
-    userClass.prototype.can = function () {
-      return acl.can(this, ...arguments)
-    }
-  }
-
-
-  /**
-   * Rules are grouped by subjects and this default mapper tries to
-   * map any non falsy input to a subject name.
-   *
-   * This is important when you want to try a verb against a rule
-   * passing in an instance of a class.
-   *
-   * - strings becomes subjects
-   * - function's names are used for subject
-   * - objects's constructor name is used for subject
-   *
-   * Override this function if your models do not match this approach.
-   *
-   * E.g. say that you are using plain data objects with a type property
-   * to indicate the "class" of the object.
-   *
-   *   acl.subjectMapper = subject => subject.type
-   *
-   * `can` will now use this function when you pass in your objects.
-   *
-   * @access public
-   * @param {Function|Object|string} subject
-   * @returns {string} A subject
-   */
-  subjectMapper(subject) {
-    if (typeof subject === 'string') { return subject }
-    return typeof subject === 'function'
-      ? subject.name
-      : subject.constructor.name
   }
 
   /**
@@ -91,17 +48,19 @@ class Acl {
    *
    * If the policy is a function it will be new'ed up before use.
    *
-   * class Post {
-   *   constructor() {
-   *     this.view = true       // no need for a functon
+   * ```javascript
+   *   class Post {
+   *     constructor() {
+   *       this.view = true       // no need for a functon
    *
-   *     this.delete = false    // not really necessary since an abscent
-   *                            // verb has the same result
-   *   },
-   *   edit(user, subject) {
-   *     return subject.id === user.id
+   *       this.delete = false    // not really necessary since an abscent
+   *                              // verb has the same result
+   *     },
+   *     edit(user, subject) {
+   *       return subject.id === user.id
+   *     }
    *   }
-   * }
+   * ```
    *
    * Policies are useful for grouping rules and adding more comples logic.
    *
@@ -128,14 +87,18 @@ class Acl {
    * can create a post you would pass the class function or a
    * string.
    *
+   * ```javascript
    *   acl->can(user, 'create', Post)
    *   acl->can(user, 'edit', post)
+   * ```
    *
    * Note that these are also available on the user if you've used
    * the mixin:
    *
+   * ```javascript
    *   user->can('create', Post)
    *   user->can('edit', post)
+   * ```
    *
    * @access public
    * @param {Object} user
@@ -155,6 +118,53 @@ class Acl {
     }
 
     return Boolean(rules[verb])
+  }
+  /**
+   * Mix in augments your user class with a `can` function. This
+   * is optional and you can always call `can` directly on your
+   * Acl instance.
+   *
+   * @access public
+   * @param {Function} User A user class or contructor function
+   */
+  mixin(User) {
+    const acl = this
+    User.prototype.can = function () {
+      return acl.can(this, ...arguments)
+    }
+  }
+
+  /**
+   * Rules are grouped by subjects and this default mapper tries to
+   * map any non falsy input to a subject name.
+   *
+   * This is important when you want to try a verb against a rule
+   * passing in an instance of a class.
+   *
+   * - strings becomes subjects
+   * - function's names are used for subject
+   * - objects's constructor name is used for subject
+   *
+   * Override this function if your models do not match this approach.
+   *
+   * E.g. say that you are using plain data objects with a type property
+   * to indicate the "class" of the object.
+   *
+   * ```javascript
+   *   acl.subjectMapper = subject => subject.type
+   * ```
+   *
+   * `can` will now use this function when you pass in your objects.
+   *
+   * @access public
+   * @param {Function|Object|string} subject
+   * @returns {string} A subject
+   */
+  subjectMapper(subject) {
+    if (typeof subject === 'string') { return subject }
+    return typeof subject === 'function'
+      ? subject.name
+      : subject.constructor.name
   }
 }
 
