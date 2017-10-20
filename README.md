@@ -222,7 +222,7 @@ E.g. say that you are using plain data objects with a type property
 to indicate the "class" of the object.
 
 ```javascript
-  acl.subjectMapper = subject => subject.type
+  acl.subjectMapper = s => typeof s === 'string' ? s : s.type
 ```
 
 `can` will now use this function when you pass in your objects.
