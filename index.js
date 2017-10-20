@@ -71,8 +71,8 @@ class Acl {
    */
   policy(policy, subject) {
     const policy_ = typeof policy === 'function' ? new policy() : policy
-    const subject_ = this.subjectMapper(subject)
-    this.policies.set(subject_, policy)
+    const subjectName = this.subjectMapper(subject)
+    this.policies.set(subjectName, policy)
     return this
   }
 
@@ -107,10 +107,18 @@ class Acl {
    * @return Boolean
    */
   can(user, verb, subject) {
-    const subject_ = this.subjectMapper(subject)
-    const rules = this.policies.get(subject_) || this.rules.get(subject_) || {}
+    const subjectName = this.subjectMapper(subject)
+    let rules = this.policies.get(subjectName) || this.rules.get(subjectName)
+
+    if (typeof rules === 'undefined') {
+      if (this.strict) {
+        throw new Error(`Unknown subject "${subjectName}"`)
+      }
+      return false
+    }
+
     if (typeof rules[verb] === 'function') {
-      return Boolean(rules[verb](user, subject, subject_))
+      return Boolean(rules[verb](user, subject, subjectName))
     }
 
     if (this.strict && typeof rules[verb] === 'undefined') {
