@@ -23,7 +23,7 @@ const acl = new Acl()
 acl.mixin(User)
 
 acl.rule('view', Post)
-acl.rule(['edit', 'delete'], Post, (user, post) => post.id === user.id)
+acl.rule(['edit', 'delete'], Post, (user, post) => post.userId === user.id)
 
 if (user.can('edit', post)) {
   // code for when user has permission
