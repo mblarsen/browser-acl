@@ -1,9 +1,11 @@
 {
   "name": "browser-acl",
   "description": "Simple ACL library for the browser inspired by Laravel's guards and policies.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "dist/browser-acl.js",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "cp .babelrc-test .babelrc && jest",
     "watch": "cp .babelrc-test .babelrc && jest --watchAll",
