@@ -54,6 +54,8 @@ Note: policies takes precedence over rules.
     -   [rule](#rule)
     -   [policy](#policy)
     -   [can](#can)
+    -   [some](#some)
+    -   [every](#every)
     -   [mixin](#mixin)
     -   [subjectMapper](#subjectmapper)
 
@@ -138,11 +140,47 @@ the mixin:
 
 Returns **any** Boolean
 
+### some
+
+Like can but subject is an array where only some has to be
+true for the rule to match.
+
+Note the subjects do not need to be of the same kind.
+
+**Parameters**
+
+-   `user` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**
+-   `verb`
+-   `subjects` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))>**
+-   `args` **...any** Any other param is passed into rule
+
+Returns **any** Boolean
+
+### every
+
+Like can but subject is an array where all has to be
+true for the rule to match.
+
+Note the subjects do not need to be of the same kind.
+
+**Parameters**
+
+-   `user` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**
+-   `verb`
+-   `subjects` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))>**
+-   `args` **...any** Any other param is passed into rule
+
+Returns **any** Boolean
+
 ### mixin
 
-Mix in augments your user class with a `can` function. This
+Mix in augments your user class with a `can` function object. This
 is optional and you can always call `can` directly on your
 Acl instance.
+
+    user.can()
+    user.can.some()
+    user.can.every()
 
 **Parameters**
 

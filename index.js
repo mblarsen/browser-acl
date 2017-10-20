@@ -128,10 +128,49 @@ class Acl {
 
     return Boolean(rules[verb])
   }
+
   /**
-   * Mix in augments your user class with a `can` function. This
+   * Like can but subject is an array where only some has to be
+   * true for the rule to match.
+   *
+   * Note the subjects do not need to be of the same kind.
+   *
+   * @access public
+   * @param {Object} user
+   * @param {Array<Function|Object|string>} subjects
+   * @param {...*} args Any other param is passed into rule
+   * @return Boolean
+   */
+  some(user, verb, subjects, ...args) {
+    return subjects.some(s => this.can(user, verb, s, ...args))
+  }
+
+  /**
+   * Like can but subject is an array where all has to be
+   * true for the rule to match.
+   *
+   * Note the subjects do not need to be of the same kind.
+   *
+   * @access public
+   * @param {Object} user
+   * @param {Array<Function|Object|string>} subjects
+   * @param {...*} args Any other param is passed into rule
+   * @return Boolean
+   */
+  every(user, verb, subjects, ...args) {
+    return subjects.every(s => this.can(user, verb, s, ...args))
+  }
+
+  /**
+   * Mix in augments your user class with a `can` function object. This
    * is optional and you can always call `can` directly on your
    * Acl instance.
+   *
+   * ```
+   * user.can()
+   * user.can.some()
+   * user.can.every()
+   * ```
    *
    * @access public
    * @param {Function} User A user class or contructor function
@@ -140,6 +179,12 @@ class Acl {
     const acl = this
     User.prototype.can = function () {
       return acl.can(this, ...arguments)
+    }
+    User.prototype.can.every = function () {
+      return acl.every(this, ...arguments)
+    }
+    User.prototype.can.some = function () {
+      return acl.some(this, ...arguments)
     }
   }
 

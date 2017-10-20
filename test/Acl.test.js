@@ -67,6 +67,57 @@ describe('The basics', () => {
   })
 })
 
+describe('Multiple', () => {
+  test('Can eat some apples', () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
+    const user = new User()
+    const fine = new Apple()
+    const rotten = new Apple()
+    rotten.rotten = true
+    expect(user.can('eat', fine)).toBe(true)
+    expect(user.can('eat', rotten)).toBe(false)
+    expect(acl.some(user, 'eat', [fine, rotten])).toBe(true)
+    expect(acl.some(user, 'eat', [rotten, rotten])).toBe(false)
+  })
+
+  test('Can eat some apples and jobs', () => {
+    const acl = new Acl()
+    acl.rule('eat', Apple)
+    acl.rule('eat', Job)
+    const user = new User()
+    expect(acl.can(user, 'eat', new Apple())).toBe(true)
+    expect(acl.can(user, 'eat', new Job())).toBe(true)
+    expect(acl.some(user, 'eat', [new Apple(), new Job()])).toBe(true)
+  })
+
+  test('Can eat every apple', () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
+    const user = new User()
+    const fine = new Apple()
+    const rotten = new Apple()
+    rotten.rotten = true
+    expect(user.can('eat', fine)).toBe(true)
+    expect(user.can('eat', rotten)).toBe(false)
+    expect(acl.every(user, 'eat', [fine, rotten])).toBe(false)
+    expect(acl.every(user, 'eat', [fine, new Apple()])).toBe(true)
+  })
+
+  test('User can eat some apples', () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
+    const user = new User()
+    const fine = new Apple()
+    const rotten = new Apple()
+    rotten.rotten = true
+    expect(user.can.some('eat', [fine, rotten])).toBe(true)
+  })
+})
+
 describe('Strict mode', () => {
   test('Throws on unknown verb', () => {
     const acl = new Acl({strict: true})
