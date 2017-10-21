@@ -99,7 +99,7 @@ If the policy is a function it will be new'ed up before use.
   }
 ```
 
-Policies are useful for grouping rules and adding more comples logic.
+Policies are useful for grouping rules and adding more complex logic.
 
 **Parameters**
 

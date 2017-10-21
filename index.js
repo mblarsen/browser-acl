@@ -63,7 +63,7 @@ class Acl {
    *   }
    * ```
    *
-   * Policies are useful for grouping rules and adding more comples logic.
+   * Policies are useful for grouping rules and adding more complex logic.
    *
    * @access public
    * @param {Object} policy A policy with properties that are verbs
