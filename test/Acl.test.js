@@ -147,6 +147,27 @@ describe('Strict mode', () => {
   })
 })
 
+describe('Registry and mapper', () => {
+  test('Can register a class', () => {
+    const acl = new Acl({strict: true})
+    class Foo { }
+    acl.register(Foo, 'User')
+    expect(acl.registry.has(Foo)).toBe(true)
+    expect(acl.registry.get(Foo)).toBe('User')
+    acl.rule('greet', Foo)
+    expect(acl.can({}, 'greet', new Foo())).toBe(true)
+  })
+
+  test('Custom mapper', () => {
+    const acl = new Acl({strict: true})
+    const item = {type: 'Item'}
+    acl.rule('lock', 'Item')
+    expect(acl.can.bind(acl, {}, 'lock', item)).toThrow('Unknown subject "Object"')
+    acl.subjectMapper = s => typeof s === 'string' ? s : s.type
+    expect(acl.can({}, 'lock', item)).toBe(true)
+  })
+})
+
 describe('More complex cases', () => {
   test('Can create jobs', () => {
     const acl = new Acl()

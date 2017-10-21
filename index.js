@@ -240,10 +240,10 @@ class Acl {
    */
   subjectMapper(subject) {
     if (typeof subject === 'string') { return subject }
-    if (this.registry.has(subject.constructor)) { return this.registry.get(subject.constructor) }
-    return typeof subject === 'function'
-      ? subject.name
-      : subject.constructor.name
+    const isFun = typeof subject === 'function'
+    if (isFun && this.registry.has(subject)) { return this.registry.get(subject) }
+    if (!isFun && this.registry.has(subject.constructor)) { return this.registry.get(subject.constructor) }
+    return isFun ? subject.name : subject.constructor.name
   }
 }
 
