@@ -88,11 +88,11 @@ class Acl {
    * bud it can be used manually through `this.registry`.
    *
    * @access public
-   * @param {Function} object A class or constructor function
+   * @param {Function} klass A class or constructor function
    * @param {string} subjectName
    */
-  register(object, subjectName) {
-    this.registry.set(object, subjectName)
+  register(klass, subjectName) {
+    this.registry.set(klass, subjectName)
     return this
   }
 

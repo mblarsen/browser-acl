@@ -121,7 +121,7 @@ bud it can be used manually through `this.registry`.
 
 **Parameters**
 
--   `object` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** A class or constructor function
+-   `klass` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** A class or constructor function
 -   `subjectName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 
 ### can
