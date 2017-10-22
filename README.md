@@ -7,43 +7,99 @@
 
 > Simple ACL library for the browser inspired by Laravel's guards and policies.
 
-# Install
+## Install
 
 ```
 yarn add browser-acl
 ```
 
-# Usage
+## Setup
 
 ```javascript
 import Acl from 'browser-acl'
 const acl = new Acl()
 
-// Attach acl function to user class/constructor
-// Adds: user.can() function
-acl.mixin(User)
-
 acl.rule('view', Post)
+acl.rule('moderate', Post, (user) => user.isModerator())
 acl.rule(['edit', 'delete'], Post, (user, post) => post.userId === user.id)
-
-if (user.can('edit', post)) {
-  // code for when user has permission
-}
 ```
 
 Policies are also supported:
 
 ```javascript
 acl.policy({
-    view: () => true,
-    edit: (user, post) => post.id === user.id),
+  view: true,
+  edit: (user, post) => post.userId === user.id),
 }, Post)
-
-if (user.can('edit', post)) {
-  // code for when user has permission
-}
 ```
+
 Note: policies takes precedence over rules.
+
+## Usage
+
+```javascript
+// true if user owns post
+acl.can(user, 'edit', post)
+
+// true if user owns at least posts
+acl.some(user, 'edit', posts)
+
+// true if user owns all posts
+acl.every(user, 'edit', posts)
+```
+
+You can add mixins to your user class:
+
+```javascript
+acl.mixin(User) // class not instance
+
+user.can(user, 'edit', post)
+user.can.some(user, 'edit', posts)
+user.can.every(user, 'edit', posts)
+```
+
+## Minification
+
+The default subject mapper makes use of "poor-man's reflection", meaning it will
+use the name of the input subject's constructor to group the subjects.
+
+When using webpack or similar this method can break if you are not careful. Since
+code minifiers will rename functions you have to make sure you only rely on the
+function to set up your rules and asking for permission.
+
+### Bad
+
+This will break with minifiers since there is no way to know the subject name
+of the subject after minification.
+
+```javascript
+acl.rule('edit', 'Post')
+```
+
+### Better
+
+This works with minifiers:
+
+```javascript
+acl.rule('edit', Post)
+```
+
+### Best
+
+This works with minifiers:
+
+```javascript
+acl.register(Post, 'Post')
+acl.rule('create', 'Post') // <-- works as expected
+acl.rule('edit', Post)     // <-- and so does this
+```
+
+### Alternative
+
+You can also override the `subjectMapper` function and a property to you objects with
+the subject name.
+
+See [subjectMapper](#subjectmapper)
 
 # API
 
@@ -69,6 +125,14 @@ test (that otherwise defaults to true).
 If the test is a function it will be evaluated with the params:
 user, subject, and subjectName. The test value is ultimately evaluated
 for thruthiness.
+
+Examples:
+
+```javascript
+acl.rule('create', Post)
+acl.rule('edit', Post, (user, post) => post.userId === user.id)
+acl.rule('delete', Post, false) // deleting disabled
+```
 
 **Parameters**
 
@@ -122,7 +186,7 @@ bud it can be used manually through `this.registry`.
 **Parameters**
 
 -   `klass` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** A class or constructor function
--   `subjectName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `subjectName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)**
 
 ### can
 

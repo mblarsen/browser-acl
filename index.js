@@ -26,6 +26,14 @@ class Acl {
    * user, subject, and subjectName. The test value is ultimately evaluated
    * for thruthiness.
    *
+   * Examples:
+   *
+   * ```javascript
+   * acl.rule('create', Post)
+   * acl.rule('edit', Post, (user, post) => post.userId === user.id)
+   * acl.rule('delete', Post, false) // deleting disabled
+   * ```
+   *
    * @access public
    * @param {Array<string>|string} verbs
    * @param {Function|Object|string} subject
