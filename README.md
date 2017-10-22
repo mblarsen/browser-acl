@@ -7,6 +7,8 @@
 
 > Simple ACL library for the browser inspired by Laravel's guards and policies.
 
+Go to [vue-browser-acl](https://github.com/mblarsen/vue-browser-acl) for the official Vue package.
+
 ## Install
 
 ```
