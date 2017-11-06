@@ -2,10 +2,21 @@
   "name": "browser-acl",
   "description": "Simple ACL library for the browser inspired by Laravel's guards and policies.",
   "version": "0.3.5",
+  "author": "Michael Bøcker-Larsen <mblarsen@gmail.com>",
   "main": "dist/browser-acl.js",
   "files": [
     "dist"
   ],
+  "keywords": [
+    "browser",
+    "acl",
+    "permissions"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mblarsen/browser-acl"
+  },
+  "bugs": "https://github.com/mblarsen/browser-acl/issues",
   "scripts": {
     "test": "cp .babelrc-test .babelrc && jest --coverage && cat ./coverage/lcov.info | coveralls -v && rm -rf ./coverage",
     "watch": "cp .babelrc-test .babelrc && jest --watchAll",
