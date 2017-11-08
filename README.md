@@ -1,4 +1,4 @@
-# browser-acl
+# browser-acl 🔒
 
 [![build status](http://img.shields.io/travis/mblarsen/browser-acl.svg)](http://travis-ci.org/mblarsen/browser-acl)
 [![Coverage Status](https://coveralls.io/repos/github/mblarsen/browser-acl/badge.svg?branch=master)](https://coveralls.io/github/mblarsen/browser-acl?branch=master)
