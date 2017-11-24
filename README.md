@@ -72,7 +72,7 @@ function to set up your rules and asking for permission.
 ### Bad
 
 This will break with minifiers since there is no way to know the subject name
-of the subject after minification.
+of the subject after minification. Typically it will be a single letter member.
 
 ```javascript
 acl.rule('edit', 'Post')
@@ -86,6 +86,12 @@ This works with minifiers:
 acl.rule('edit', Post)
 ```
 
+Whatever Post is minified to that is what the rule will work on. As long as the same import
+is used throughout your code base it will work. With webpack for instance it most likely will
+be the same.
+
+But we can do better.
+
 ### Best
 
 This works with minifiers:
@@ -95,6 +101,9 @@ acl.register(Post, 'Post')
 acl.rule('create', 'Post') // <-- works as expected
 acl.rule('edit', Post)     // <-- and so does this
 ```
+
+This basically sets up an alias for Post so that you can refer to it as 'Post'. So even though
+Post may actually turn into `t` you can still refer to it as Post.
 
 ### Alternative
 
