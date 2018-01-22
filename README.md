@@ -142,6 +142,7 @@ Examples:
 ```javascript
 acl.rule('create', Post)
 acl.rule('edit', Post, (user, post) => post.userId === user.id)
+acl.rule('edit', Post, (user, post, verb, any, other, value, passed) => true)
 acl.rule('delete', Post, false) // deleting disabled
 ```
 
@@ -168,8 +169,8 @@ If the policy is a function it will be new'ed up before use.
       this.delete = false    // not really necessary since an abscent
                              // verb has the same result
     },
-    edit(user, subject) {
-      return subject.id === user.id
+    edit(user, post, verb, any, other, value, passed) {
+      return post.id === user.id
     }
   }
 ```
@@ -214,6 +215,7 @@ string.
 ```javascript
   acl->can(user, 'create', Post)
   acl->can(user, 'edit', post)
+  acl->can(user, 'edit', post, any, other, value, passed)
 ```
 
 Note that these are also available on the user if you've used
