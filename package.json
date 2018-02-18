@@ -31,5 +31,6 @@
     "babel-preset-env": "^1.6.1",
     "coveralls": "^3.0.0",
     "jest": "^21.2.1"
-  }
+  },
+  "thanks": "https://flattr.com/@mblarsen"
 }
