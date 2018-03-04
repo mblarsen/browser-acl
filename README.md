@@ -55,9 +55,9 @@ You can add mixins to your user class:
 ```javascript
 acl.mixin(User) // class not instance
 
-user.can(user, 'edit', post)
-user.can.some(user, 'edit', posts)
-user.can.every(user, 'edit', posts)
+user.can('edit', post)
+user.can.some('edit', posts)
+user.can.every('edit', posts)
 ```
 
 ## Minification
