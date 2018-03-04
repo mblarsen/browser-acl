@@ -193,7 +193,7 @@ minified in which case the default mapper cannot use the
 simple "reflection" to resolve the subject name.
 
 Note: If you override the subjectMapper this is not used,
-bud it can be used manually through `this.registry`.
+but it can be used manually through `this.registry`.
 
 **Parameters**
 
