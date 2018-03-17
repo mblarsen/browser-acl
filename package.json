@@ -30,6 +30,7 @@
     "babel-jest": "^21.2.0",
     "babel-preset-env": "^1.6.1",
     "coveralls": "^3.0.0",
+    "documentation": "^6.1.0",
     "jest": "^21.2.1",
     "poi": "^9.6.13"
   },
