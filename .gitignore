@@ -4,3 +4,4 @@ coverage/
 tags
 yarn-*
 .dat
+dist/docs.md

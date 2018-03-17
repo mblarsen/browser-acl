@@ -23,7 +23,8 @@
     "build": "rm .babelrc ; poi build",
     "preversion": "npm run test",
     "version": "npm run build && git add -A dist",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "build:docs": "documentation build index.js -f md -o dist/docs.md"
   },
   "license": "MIT",
   "devDependencies": {
