@@ -255,6 +255,64 @@ class Acl {
     if (!isFun && this.registry.has(subject.constructor)) { return this.registry.get(subject.constructor) }
     return isFun ? subject.name : subject.constructor.name
   }
+
+  /**
+   * Removes all rules, policies, and registrations
+   *
+   * @returns {Acl}
+   */
+  reset() {
+    this.rules = new Map()
+    this.policies = new Map()
+    this.registry = new WeakMap()
+    return this
+  }
+
+  /**
+   * Remove rules for subject
+   *
+   * Optionally limit to a single verb.
+   *
+   * @param {Object|Function|String} subject
+   * @param {?String} [verb=null] an optional verb
+   * @returns {Acl}
+   */
+  removeRules(subject, verb = null) {
+    const subjectName = this.subjectMapper(subject)
+    if (this.rules.has(subjectName)) {
+      if (verb) {
+        const rules = this.rules.get(subjectName)
+        delete rules[verb]
+        return this
+      }
+      this.rules.delete(subjectName)
+    }
+    return this
+  }
+
+  /**
+   * Remove policy for subject
+   *
+   * @param {Object|Function|String} subject
+   * @returns {Acl}
+   */
+  removePolicy(subject) {
+    const subjectName = this.subjectMapper(subject)
+    this.policies.delete(subjectName)
+    return this
+  }
+
+  /**
+   * Convenience method for removing all rules and policies for a subject
+   *
+   * @param {Object|Function|String} subject
+   * @returns {Acl}
+   */
+  removeAll(subject) {
+    this.removeRules(subject)
+    this.removePolicy(subject)
+    return this
+  }
 }
 
 export default Acl

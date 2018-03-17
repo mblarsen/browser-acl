@@ -118,15 +118,19 @@ See [subjectMapper](#subjectmapper)
 
 ### Table of Contents
 
--   [Acl](#acl)
-    -   [rule](#rule)
-    -   [policy](#policy)
-    -   [register](#register)
-    -   [can](#can)
-    -   [some](#some)
-    -   [every](#every)
-    -   [mixin](#mixin)
-    -   [subjectMapper](#subjectmapper)
+-   [Acl][1]
+    -   [rule][2]
+    -   [policy][3]
+    -   [register][4]
+    -   [can][5]
+    -   [some][6]
+    -   [every][7]
+    -   [mixin][8]
+    -   [subjectMapper][9]
+    -   [reset][10]
+    -   [removeRules][11]
+    -   [removePolicy][12]
+    -   [removeAll][13]
 
 ### rule
 
@@ -148,11 +152,11 @@ acl.rule('delete', Post, false) // deleting disabled
 
 **Parameters**
 
--   `verbs` **([Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)> | [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))**
--   `subject` **([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))**
--   `test` **[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** =true (optional, default `true`)
+-   `verbs` **([Array][14]&lt;[string][15]> | [string][15])** 
+-   `subject` **([Function][16] \| [Object][17] \| [string][15])** 
+-   `test` **[Boolean][18]** =true (optional, default `true`)
 
-Returns **[Acl](#acl)**
+Returns **[Acl][19]** 
 
 ### policy
 
@@ -179,10 +183,10 @@ Policies are useful for grouping rules and adding more complex logic.
 
 **Parameters**
 
--   `policy` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** A policy with properties that are verbs
--   `subject` **([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))**
+-   `policy` **[Object][17]** A policy with properties that are verbs
+-   `subject` **([Function][16] \| [Object][17] \| [string][15])** 
 
-Returns **[Acl](#acl)**
+Returns **[Acl][19]** 
 
 ### register
 
@@ -193,12 +197,12 @@ minified in which case the default mapper cannot use the
 simple "reflection" to resolve the subject name.
 
 Note: If you override the subjectMapper this is not used,
-but it can be used manually through `this.registry`.
+bud it can be used manually through `this.registry`.
 
 **Parameters**
 
--   `klass` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** A class or constructor function
--   `subjectName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)**
+-   `klass` **[Function][16]** A class or constructor function
+-   `subjectName` **[string][15]** 
 
 ### can
 
@@ -228,9 +232,9 @@ the mixin:
 
 **Parameters**
 
--   `user` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**
--   `verb` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)**
--   `subject` **([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))**
+-   `user` **[Object][17]** 
+-   `verb` **[string][15]** 
+-   `subject` **([Function][16] \| [Object][17] \| [string][15])** 
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -244,9 +248,9 @@ Note the subjects do not need to be of the same kind.
 
 **Parameters**
 
--   `user` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**
--   `verb`
--   `subjects` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))>**
+-   `user` **[Object][17]** 
+-   `verb`  
+-   `subjects` **[Array][14]&lt;([Function][16] \| [Object][17] \| [string][15])>** 
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -260,9 +264,9 @@ Note the subjects do not need to be of the same kind.
 
 **Parameters**
 
--   `user` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**
--   `verb`
--   `subjects` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))>**
+-   `user` **[Object][17]** 
+-   `verb`  
+-   `subjects` **[Array][14]&lt;([Function][16] \| [Object][17] \| [string][15])>** 
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -279,7 +283,7 @@ Acl instance.
 
 **Parameters**
 
--   `User` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** A user class or contructor function
+-   `User` **[Function][16]** A user class or contructor function
 
 ### subjectMapper
 
@@ -304,11 +308,88 @@ to indicate the "class" of the object.
 
 `can` will now use this function when you pass in your objects.
 
-See [register()](#register) for how to manually map
+See [register()][4] for how to manually map
 classes to subject name.
 
 **Parameters**
 
--   `subject` **([Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) \| [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String))**
+-   `subject` **([Function][16] \| [Object][17] \| [string][15])** 
 
-Returns **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A subject
+Returns **[string][15]** A subject
+
+### reset
+
+Removes all rules, policies, and registrations
+
+Returns **[Acl][19]** 
+
+### removeRules
+
+Remove rules for subject
+
+Optionally limit to a single verb.
+
+**Parameters**
+
+-   `subject` **([Object][17] \| [Function][16] \| [String][15])** 
+-   `verb` **[String][15]?** an optional verb (optional, default `null`)
+
+Returns **[Acl][19]** 
+
+### removePolicy
+
+Remove policy for subject
+
+**Parameters**
+
+-   `subject` **([Object][17] \| [Function][16] \| [String][15])** 
+
+Returns **[Acl][19]** 
+
+### removeAll
+
+Convenience method for removing all rules and policies for a subject
+
+**Parameters**
+
+-   `subject` **([Object][17] \| [Function][16] \| [String][15])** 
+
+Returns **[Acl][19]** 
+
+[1]: #acl
+
+[2]: #rule
+
+[3]: #policy
+
+[4]: #register
+
+[5]: #can
+
+[6]: #some
+
+[7]: #every
+
+[8]: #mixin
+
+[9]: #subjectmapper
+
+[10]: #reset
+
+[11]: #removerules
+
+[12]: #removepolicy
+
+[13]: #removeall
+
+[14]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[15]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[16]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[17]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[19]: #acl

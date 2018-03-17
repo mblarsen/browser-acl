@@ -168,6 +168,92 @@ describe('Registry and mapper', () => {
   })
 })
 
+describe('Reset and remove', () => {
+  test('Reset', () => {
+    const acl = new Acl()
+    function JobPolicy() {
+      this.view = true
+    }
+    const job = new Job()
+    const apple = new Apple()
+    acl.strict = true
+    acl.register(Job, 'Job')
+    acl.rule('eat', 'Apple')
+    acl.policy(JobPolicy, Job)
+    expect(acl.registry.has(Job)).toBe(true)
+    expect(acl.can({}, 'view', job)).toBe(true)
+    expect(acl.can({}, 'eat', apple)).toBe(true)
+    acl.reset()
+    expect(acl.registry.has(Job)).toBe(false)
+    expect(acl.can.bind(acl, {}, 'view', job)).toThrow('Unknown subject "Job"')
+    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow('Unknown subject "Apple"')
+  })
+
+  test('Remove rules', () => {
+    const acl = new Acl()
+    const apple = new Apple()
+    acl.strict = true
+    acl.rule('eat', 'Apple')
+    acl.rule('discard', 'Apple')
+    expect(acl.can({}, 'eat', apple)).toBe(true)
+    expect(acl.can({}, 'discard', apple)).toBe(true)
+    acl.removeRules(apple)
+    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow('Unknown subject "Apple"')
+    expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow('Unknown subject "Apple"')
+  })
+
+  test('Remove rules, single', () => {
+    const acl = new Acl()
+    const apple = new Apple()
+    acl.strict = true
+    acl.register(Apple, 'Apple')
+    acl.rule('eat', 'Apple')
+    acl.rule('discard', 'Apple')
+    expect(acl.can({}, 'eat', apple)).toBe(true)
+    expect(acl.can({}, 'discard', apple)).toBe(true)
+    acl.removeRules(apple, 'discard')
+    expect(acl.registry.has(Apple)).toBe(true)
+    expect(acl.can({}, 'eat', apple)).toBe(true)
+    expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow('Unknown verb "discard"')
+  })
+
+  test('Remove policy', () => {
+    const acl = new Acl()
+    function JobPolicy() {
+      this.view = true
+    }
+    const job = new Job()
+    acl.strict = true
+    acl.register(Job, 'Job')
+    acl.policy(JobPolicy, Job)
+    expect(acl.can({}, 'view', job)).toBe(true)
+    acl.removePolicy(job)
+    expect(acl.registry.has(Job)).toBe(true)
+    expect(acl.can.bind(acl, {}, 'view', job)).toThrow('Unknown subject "Job"')
+  })
+
+  test('Remove all', () => {
+    const acl = new Acl()
+    function JobPolicy() {
+      this.view = true
+    }
+    const job = new Job()
+    const apple = new Apple()
+    acl.strict = true
+    acl.register(Job, 'Job')
+    acl.rule('eat', 'Apple')
+    acl.policy(JobPolicy, Job)
+    expect(acl.registry.has(Job)).toBe(true)
+    expect(acl.can({}, 'view', job)).toBe(true)
+    expect(acl.can({}, 'eat', apple)).toBe(true)
+    acl.removeAll(job)
+    acl.removeAll(apple)
+    expect(acl.registry.has(Job)).toBe(true)
+    expect(acl.can.bind(acl, {}, 'view', job)).toThrow('Unknown subject "Job"')
+    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow('Unknown subject "Apple"')
+  })
+})
+
 describe('More complex cases', () => {
   test('Can create jobs', () => {
     const acl = new Acl()
@@ -204,6 +290,7 @@ describe('More complex cases', () => {
     expect(owner.can('view', job)).toBe(true)
     expect(coworker.can('view', job)).toBe(true)
   })
+
   test('Policy', () => {
     const acl = new Acl()
     acl.mixin(User)
@@ -244,6 +331,7 @@ describe('More complex cases', () => {
     expect(owner.can('view', job)).toBe(true)
     expect(coworker.can('view', job)).toBe(true)
   })
+
   test('Policy newed', () => {
     const acl = new Acl()
     function JobPolicy() {
@@ -252,5 +340,18 @@ describe('More complex cases', () => {
     acl.policy(JobPolicy, Job)
     expect(acl.policies.get('Job')).toBeInstanceOf(JobPolicy)
     expect(acl.can({}, 'view', new Job())).toBe(true)
+  })
+
+  test('Policy overwrites rules', () => {
+    const acl = new Acl()
+    function JobPolicy() {
+      this.view = true
+    }
+    const job = new Job()
+    acl.rule('edit', 'Job')
+    acl.policy(JobPolicy, Job)
+    acl.rule('edit', 'Job')
+    expect(acl.can({}, 'edit', job)).toBe(false)
+    expect(acl.can({}, 'view', job)).toBe(true)
   })
 })
