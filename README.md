@@ -105,7 +105,7 @@ acl.rule('edit', Post)     // <-- and so does this
 This basically sets up an alias for Post so that you can refer to it as 'Post'. So even though
 Post may actually turn into `t` you can still refer to it as Post.
 
-### Alternative
+### Alternatives to classes and constructor functions
 
 You can also override the `subjectMapper` function and a property to you objects with
 the subject name.
