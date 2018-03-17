@@ -24,7 +24,7 @@ class Acl {
    *
    * If the test is a function it will be evaluated with the params:
    * user, subject, and subjectName. The test value is ultimately evaluated
-   * for thruthiness.
+   * for truthiness.
    *
    * Examples:
    *
