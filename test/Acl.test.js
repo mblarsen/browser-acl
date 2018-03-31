@@ -16,6 +16,13 @@ describe('The basics', () => {
     expect(user.can).toBeDefined()
   })
 
+  test('Global rules', () => {
+    const acl = new Acl()
+    acl.rule('purgeInactive', user => user.isAdmin)
+    expect(acl.can({isAdmin: true}, 'purgeInactive')).toBe(true)
+    expect(acl.can({isAdmin: false}, 'purgeInactive')).toBe(false)
+  })
+
   test('Cannot eat apples (no rule)', () => {
     const acl = new Acl()
     acl.mixin(User)

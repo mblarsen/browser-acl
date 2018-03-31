@@ -1,13 +1,18 @@
+
+export const GlobalRule = 'GLOBAL_RULE'
+
+const isNameless = fn => typeof fn === 'function' && fn.name === ''
+
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
- * @class Acl
  */
-class Acl {
+export default class Acl {
 
   /**
    * browser-acl
    *
    * @access public
+   * @param {Object} options
    * @param {Boolean} {strict=false}={} Errors out on unknown verbs when true
    * @returns {Acl}
    */
@@ -33,15 +38,20 @@ class Acl {
    * acl.rule('edit', Post, (user, post) => post.userId === user.id)
    * acl.rule('edit', Post, (user, post, verb, additionalParameter, secondAdditionalParameter) => true)
    * acl.rule('delete', Post, false) // deleting disabled
+   * acl.rule('purgeInactive', user => user.isAdmin) // global rule
    * ```
    *
    * @access public
    * @param {Array<string>|string} verbs
-   * @param {Function|Object|string} subject
+   * @param {Function|Object|string} subject?
    * @param {Boolean|Function} test=true
    * @returns {Acl}
    */
   rule(verbs, subject, test = true) {
+    if (isNameless(subject)) {
+      test = subject
+      subject = GlobalRule
+    }
     const subjectName = this.subjectMapper(subject)
     const verbs_ = Array.isArray(verbs) ? verbs : [verbs]
     verbs_.forEach(verb => {
@@ -138,7 +148,9 @@ class Acl {
    * @return Boolean
    */
   can(user, verb, subject, ...args) {
+    subject = typeof subject === 'undefined' ? GlobalRule : subject
     const subjectName = this.subjectMapper(subject)
+
     let rules = this.policies.get(subjectName) || this.rules.get(subjectName)
 
     if (typeof rules === 'undefined') {
@@ -314,5 +326,3 @@ class Acl {
     return this
   }
 }
-
-export default Acl
