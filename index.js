@@ -38,7 +38,7 @@ class Acl {
    * @access public
    * @param {Array<string>|string} verbs
    * @param {Function|Object|string} subject
-   * @param {Boolean} test=true
+   * @param {Boolean|Function} test=true
    * @returns {Acl}
    */
   rule(verbs, subject, test = true) {
