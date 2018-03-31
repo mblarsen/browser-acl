@@ -31,7 +31,7 @@ class Acl {
    * ```javascript
    * acl.rule('create', Post)
    * acl.rule('edit', Post, (user, post) => post.userId === user.id)
-   * acl.rule('edit', Post, (user, post, verb, any, other, value, passed) => true)
+   * acl.rule('edit', Post, (user, post, verb, additionalParameter, secondAdditionalParameter) => true)
    * acl.rule('delete', Post, false) // deleting disabled
    * ```
    *
@@ -66,7 +66,7 @@ class Acl {
    *       this.delete = false    // not really necessary since an abscent
    *                              // verb has the same result
    *     },
-   *     edit(user, post, verb, any, other, value, passed) {
+   *     edit(user, post, verb, additionalParameter, secondAdditionalParameter) {
    *       return post.id === user.id
    *     }
    *   }
@@ -119,7 +119,7 @@ class Acl {
    * ```javascript
    *   acl->can(user, 'create', Post)
    *   acl->can(user, 'edit', post)
-   *   acl->can(user, 'edit', post, any, other, value, passed)
+   *   acl->can(user, 'edit', post, additionalParameter, secondAdditionalParameter)
    * ```
    *
    * Note that these are also available on the user if you've used
