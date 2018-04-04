@@ -18,9 +18,9 @@
   },
   "bugs": "https://github.com/mblarsen/browser-acl/issues",
   "scripts": {
-    "test": "cp .babelrc-test .babelrc && jest --coverage && cat ./coverage/lcov.info | coveralls -v && rm -rf ./coverage",
-    "watch": "cp .babelrc-test .babelrc && jest --watchAll",
-    "build": "rm .babelrc ; poi build",
+    "test": "jest --coverage && cat ./coverage/lcov.info | coveralls -v && rm -rf ./coverage",
+    "watch": "jest --watchAll",
+    "build": "poi build && cp ./index.js ./dist/browser-acl.js.flow",
     "preversion": "npm run test",
     "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags",
@@ -29,11 +29,15 @@
   "license": "MIT",
   "devDependencies": {
     "babel-jest": "^21.2.0",
+    "babel-plugin-syntax-class-properties": "^6.13.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-env": "^1.6.1",
     "coveralls": "^3.0.0",
     "documentation": "^6.1.0",
+    "flow-bin": "^0.69.0",
     "jest": "^21.2.1",
-    "poi": "^9.6.13"
+    "poi": "^9.6.13",
+    "poi-preset-babel-minify": "^1.0.3"
   },
   "thanks": "https://flattr.com/@mblarsen"
 }

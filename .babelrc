@@ -1,0 +1,15 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "browsers": "last 2 versions"
+      }
+    }],
+    "flow"
+  ],
+  "plugins": [
+    "transform-flow-strip-types",
+    "transform-class-properties",
+    "syntax-class-properties"
+  ]
+}

@@ -30,7 +30,7 @@ describe('The basics', () => {
     expect(user.can('eat', 'Apple')).toBe(false)
   })
 
-  test('Cannot eat apples (!test)', () => {
+  test('Cannot eat apples (test = false)', () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule(['eat'], 'Apple', false)
