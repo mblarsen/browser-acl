@@ -1,7 +1,10 @@
 
 export const GlobalRule = 'GLOBAL_RULE'
 
-const isNameless = fn => typeof fn === 'function' && fn.name === ''
+const assumeGlobal = sub =>
+  typeof sub === 'boolean' ||
+  typeof sub === 'undefined' ||
+  (typeof sub === 'function' && sub.name === '')
 
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
@@ -48,8 +51,8 @@ export default class Acl {
    * @returns {Acl}
    */
   rule(verbs, subject, test = true) {
-    if (isNameless(subject)) {
-      test = subject
+    if (assumeGlobal(subject)) {
+      test = typeof subject === 'undefined' ? true : subject
       subject = GlobalRule
     }
     const subjectName = this.subjectMapper(subject)

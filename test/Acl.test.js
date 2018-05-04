@@ -1,4 +1,4 @@
-import Acl from '../index.js'
+import Acl, {GlobalRule} from '../index.js'
 
 class User {}
 class Apple {}
@@ -21,6 +21,12 @@ describe('The basics', () => {
     acl.rule('purgeInactive', user => user.isAdmin)
     expect(acl.can({isAdmin: true}, 'purgeInactive')).toBe(true)
     expect(acl.can({isAdmin: false}, 'purgeInactive')).toBe(false)
+    acl.rule('contact')
+    expect(acl.can({}, 'contact')).toBe(true)
+    acl.rule('contact', false)
+    expect(acl.can({}, 'contact')).toBe(false)
+    acl.rule('pillage', false)
+    expect(acl.can({}, 'pillage')).toBe(false)
   })
 
   test('Cannot eat apples (no rule)', () => {
