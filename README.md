@@ -3,7 +3,8 @@
 [![build status](http://img.shields.io/travis/mblarsen/browser-acl.svg)](http://travis-ci.org/mblarsen/browser-acl)
 [![Coverage Status](https://coveralls.io/repos/github/mblarsen/browser-acl/badge.svg?branch=master)](https://coveralls.io/github/mblarsen/browser-acl?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/mblarsen/browser-acl/badge.svg)](https://snyk.io/test/github/mblarsen/browser-acl)
-[![NPM version](http://img.shields.io/npm/v/browser-acl.svg)](https://www.npmjs.com/package/browser-acl) [![](https://img.shields.io/npm/dm/browser-acl.svg)](https://www.npmjs.com/package/browser-acl)
+[![Monthly downloads](https://img.shields.io/npm/dm/browser-acl.svg)](https://www.npmjs.com/package/browser-acl)
+[![NPM version](http://img.shields.io/npm/v/browser-acl.svg)](https://www.npmjs.com/package/browser-acl) 
 
 > Simple ACL library for the browser inspired by Laravel's guards and policies.
 
