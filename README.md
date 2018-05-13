@@ -6,7 +6,7 @@
 [![Monthly downloads](https://img.shields.io/npm/dm/browser-acl.svg)](https://www.npmjs.com/package/browser-acl)
 [![NPM version](http://img.shields.io/npm/v/browser-acl.svg)](https://www.npmjs.com/package/browser-acl) 
 
-> Simple ACL library for the browser inspired by Laravel's guards and policies.
+> Simple access control (ACL) library for the browser inspired by Laravel's guards and policies.
 
 Go to [vue-browser-acl](https://github.com/mblarsen/vue-browser-acl) for the official Vue package.
 
