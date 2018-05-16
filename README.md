@@ -62,59 +62,63 @@ user.can.some('edit', posts)
 user.can.every('edit', posts)
 ```
 
-## Minification
+## Subject mapping
+
+> The process of mapping input to rules
 
 The default subject mapper makes use of "poor-man's reflection", meaning it will
-use the name of the input subject's constructor to group the subjects.
+use the name of the input subject's constructor to group the rules.
 
 When using webpack or similar this method can break if you are not careful. Since
 code minifiers will rename functions you have to make sure you only rely on the
 function to set up your rules and asking for permission.
 
-### Bad
-
-This will break with minifiers since there is no way to know the subject name
-of the subject after minification. Typically it will be a single letter member.
+### Meeeh
 
 ```javascript
-acl.rule('edit', 'Post')
+1: acl.rule('edit', 'Post')
+2: ...
+3: acl.can(user, post) 
 ```
+
+If your build process minifies your code (specifically mangling of function and class
+names), this will break in line 3 since the constructor of post will likely not be `Post`
+but rather a single letter or a name prefixed with `__WEBPACK_IMPORTED_MODULE`.
 
 ### Better
 
-This works with minifiers:
-
 ```javascript
-acl.rule('edit', Post)
+1: acl.rule('edit', Post)
+2: ...
+3: acl.can(user, post) 
 ```
 
-Whatever Post is minified to that is what the rule will work on. As long as the same import
-is used throughout your code base it will work. With webpack for instance it most likely will
-be the same.
-
-But we can do better.
+Here `Post` in line 1 the class or constructor function is passed in, and whatever that name is 
+after minification, is used to register the rules. As long as the same import is used 
+throughout your code base it will work. 
 
 ### Best
 
-This works with minifiers:
-
 ```javascript
-acl.register(Post, 'Post')
-acl.rule('create', 'Post') // <-- works as expected
-acl.rule('edit', Post)     // <-- and so does this
+1: acl.register(Post, 'Post')
+2: ...
+3: acl.rule('create', 'Post') // <-- works as expected
+4: ...
+5: acl.rule('edit', Post)     // <-- and so does this
+6: acl.rule('edit', post)     // <-- and so does this
 ```
 
-This basically sets up an alias for Post so that you can refer to it as 'Post'. So even though
-Post may actually turn into `t` you can still refer to it as Post.
+This basically sets up an alias for Post the class or constructor function, so that you can refer 
+to it as 'Post'. 
 
-### Alternatives to classes and constructor functions
+## Alternatives to classes and constructor functions
 
 You can also override the `subjectMapper` function and a property to you objects with
 the subject name.
 
 See [subjectMapper](#subjectmapper)
 
-### Additional Parameters and Global Rules
+## Additional Parameters and Global Rules
 
 You can define global rules by omitting the subject when defining rules.
 
