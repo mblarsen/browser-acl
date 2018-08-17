@@ -367,4 +367,29 @@ describe('More complex cases', () => {
     expect(acl.can({}, 'edit', job)).toBe(false)
     expect(acl.can({}, 'view', job)).toBe(true)
   })
+
+  test('Policy beforeAll', () => {
+    const acl = new Acl()
+    function JobPolicy () {
+      this.beforeAll = function (verb, user) {
+        if (user.isAdmin) {
+          return true
+        }
+        if (verb === 'beLazy') {
+          return false
+        }
+      }
+      this.view = true
+      this.edit = false
+      this.beLazy = true
+    }
+    const job = new Job()
+    acl.policy(JobPolicy, Job)
+    expect(acl.can({}, 'view', job)).toBe(true)
+    expect(acl.can({isAdmin: true}, 'view', job)).toBe(true)
+    expect(acl.can({}, 'edit', job)).toBe(false)
+    expect(acl.can({isAdmin: true}, 'edit', job)).toBe(true)
+    expect(acl.can({}, 'beLazy', job)).toBe(false)
+    expect(acl.can({isAdmin: true}, 'beLazy', job)).toBe(true)
+  })
 })

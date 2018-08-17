@@ -75,10 +75,15 @@ export default class Acl {
    *   class Post {
    *     constructor() {
    *       this.view = true       // no need for a functon
-   *
    *       this.delete = false    // not really necessary since an abscent
    *                              // verb has the same result
-   *     },
+   *     }
+   *     beforeAll(verb, user, ...theRest) {
+   *       if (user.isAdmin) {
+   *         return true
+   *       }
+   *       // return nothing (undefined) to pass it on to the other rules
+   *     }
    *     edit(user, post, verb, additionalParameter, secondAdditionalParameter) {
    *       return post.id === user.id
    *     }
@@ -154,13 +159,21 @@ export default class Acl {
     subject = typeof subject === 'undefined' ? GlobalRule : subject
     const subjectName = this.subjectMapper(subject)
 
-    let rules = this.policies.get(subjectName) || this.rules.get(subjectName)
+    const policy = this.policies.get(subjectName)
+    const rules = policy || this.rules.get(subjectName)
 
     if (typeof rules === 'undefined') {
       if (this.strict) {
         throw new Error(`Unknown subject "${subjectName}"`)
       }
       return false
+    }
+
+    if (policy && typeof policy.beforeAll === 'function') {
+      const result = policy.beforeAll(verb, user, subject, subjectName, ...args)
+      if (typeof result !== 'undefined') {
+        return result
+      }
     }
 
     if (typeof rules[verb] === 'function') {

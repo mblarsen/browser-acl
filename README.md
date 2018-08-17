@@ -25,7 +25,7 @@ const acl = new Acl()
 acl.rule('view', Post)
 acl.rule('moderate', Post, (user) => user.isModerator())
 acl.rule(['edit', 'delete'], Post, (user, post) => post.userId === user.id)
-acl.rule('purgeInactive', user => user.isAdmin) 
+acl.rule('purgeInactive', user => user.isAdmin)
 ```
 
 Policies are also supported:
@@ -167,6 +167,17 @@ This is only in the case when you need to pass additional parameters.
     -   [removePolicy][12]
     -   [removeAll][13]
 
+## Acl
+
+Simple ACL library for the browser inspired by Laravel's guards and policies.
+
+**Parameters**
+
+-   `$0` **[Object][14]**  (optional, default `{}`)
+-   `$0.strict` (optional, default `false`)
+-   `options` **[Object][14]**
+-   `null` **[Boolean][15]** {strict=false}={} Errors out on unknown verbs when true
+
 ### rule
 
 You add rules by providing a verb, a subject and an optional
@@ -188,11 +199,11 @@ acl.rule('purgeInactive', user => user.isAdmin) // global rule
 
 **Parameters**
 
--   `verbs` **([Array][16]&lt;[string][17]> | [string][17])** 
+-   `verbs` **([Array][16]&lt;[string][17]> | [string][17])**
 -   `subject` **([Function][18] \| [Object][14] \| [string][17])** ?
 -   `test` **([Boolean][15] \| [Function][18])** =true (optional, default `true`)
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### policy
 
@@ -205,10 +216,15 @@ If the policy is a function it will be new'ed up before use.
   class Post {
     constructor() {
       this.view = true       // no need for a functon
-
       this.delete = false    // not really necessary since an abscent
                              // verb has the same result
-    },
+    }
+    beforeAll(verb, user, ...theRest) {
+      if (user.isAdmin) {
+        return true
+      }
+      // return nothing (undefined) to pass it on to the other rules
+    }
     edit(user, post, verb, additionalParameter, secondAdditionalParameter) {
       return post.id === user.id
     }
@@ -220,9 +236,9 @@ Policies are useful for grouping rules and adding more complex logic.
 **Parameters**
 
 -   `policy` **[Object][14]** A policy with properties that are verbs
--   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])**
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### register
 
@@ -238,7 +254,7 @@ bud it can be used manually through `this.registry`.
 **Parameters**
 
 -   `klass` **[Function][18]** A class or constructor function
--   `subjectName` **[string][17]** 
+-   `subjectName` **[string][17]**
 
 ### can
 
@@ -268,9 +284,9 @@ the mixin:
 
 **Parameters**
 
--   `user` **[Object][14]** 
--   `verb` **[string][17]** 
--   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
+-   `user` **[Object][14]**
+-   `verb` **[string][17]**
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])**
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -284,9 +300,9 @@ Note the subjects do not need to be of the same kind.
 
 **Parameters**
 
--   `user` **[Object][14]** 
--   `verb`  
--   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>** 
+-   `user` **[Object][14]**
+-   `verb`
+-   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>**
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -300,9 +316,9 @@ Note the subjects do not need to be of the same kind.
 
 **Parameters**
 
--   `user` **[Object][14]** 
--   `verb`  
--   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>** 
+-   `user` **[Object][14]**
+-   `verb`
+-   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>**
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -349,7 +365,7 @@ classes to subject name.
 
 **Parameters**
 
--   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])**
 
 Returns **[string][17]** A subject
 
@@ -357,7 +373,7 @@ Returns **[string][17]** A subject
 
 Removes all rules, policies, and registrations
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### removeRules
 
@@ -367,10 +383,10 @@ Optionally limit to a single verb.
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])**
 -   `verb` **[String][17]?** an optional verb (optional, default `null`)
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### removePolicy
 
@@ -378,9 +394,9 @@ Remove policy for subject
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])**
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### removeAll
 
@@ -388,9 +404,9 @@ Convenience method for removing all rules and policies for a subject
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])**
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 [1]: #acl
 
@@ -429,3 +445,5 @@ Returns **[Acl][19]**
 [18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
 [19]: #acl
+
+
