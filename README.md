@@ -347,7 +347,7 @@ passing in an instance of a class.
 
 -   strings becomes subjects
 -   function's names are used for subject
--   objects's constructor name is used for subject
+-   object's constructor name is used for subject
 
 Override this function if your models do not match this approach.
 
@@ -359,6 +359,15 @@ to indicate the "class" of the object.
 ```
 
 `can` will now use this function when you pass in your objects.
+
+```javascript
+acl.rule('edit', 'book', (user, book) => user.id === book.authorId)
+const thing = {title: 'The Silmarillion', authorId: 1, type: 'book'}
+acl.can(user, 'edit', thing)
+```
+
+In the example above the 'thing' will follow the rules for 'book'. The
+user can edit the book if they are the author.
 
 See [register()][4] for how to manually map
 classes to subject name.

@@ -256,18 +256,27 @@ export default class Acl {
    *
    * - strings becomes subjects
    * - function's names are used for subject
-   * - objects's constructor name is used for subject
+   * - object's constructor name is used for subject
    *
    * Override this function if your models do not match this approach.
    *
    * E.g. say that you are using plain data objects with a type property
-   * to indicate the "class" of the object.
+   * to indicate the type of the object.
    *
    * ```javascript
    *   acl.subjectMapper = s => typeof s === 'string' ? s : s.type
    * ```
    *
    * `can` will now use this function when you pass in your objects.
+   *
+   * ```javascript
+   * acl.rule('edit', 'book', (user, book) => user.id === book.authorId)
+   * const thing = {title: 'The Silmarillion', authorId: 1, type: 'book'}
+   * acl.can(user, 'edit', thing)
+   * ```
+   *
+   * In the example above the 'thing' will follow the rules for 'book'. The
+   * user can edit the book if they are the author.
    *
    * See {@link #register register()} for how to manually map
    * classes to subject name.
