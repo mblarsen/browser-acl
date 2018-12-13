@@ -10,7 +10,6 @@ const assumeGlobal = sub =>
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  */
 export default class Acl {
-
   /**
    * browser-acl
    *
@@ -19,7 +18,7 @@ export default class Acl {
    * @param {Boolean} {strict=false}={} Errors out on unknown verbs when true
    * @returns {Acl}
    */
-  constructor({strict = false} = {}) {
+  constructor({ strict = false } = {}) {
     this.strict = strict
     this.rules = new Map()
     this.policies = new Map()
@@ -235,13 +234,13 @@ export default class Acl {
    */
   mixin(User) {
     const acl = this
-    User.prototype.can = function () {
+    User.prototype.can = function() {
       return acl.can(this, ...arguments)
     }
-    User.prototype.can.every = function () {
+    User.prototype.can.every = function() {
       return acl.every(this, ...arguments)
     }
-    User.prototype.can.some = function () {
+    User.prototype.can.some = function() {
       return acl.some(this, ...arguments)
     }
     return this
@@ -286,10 +285,16 @@ export default class Acl {
    * @returns {string} A subject
    */
   subjectMapper(subject) {
-    if (typeof subject === 'string') { return subject }
+    if (typeof subject === 'string') {
+      return subject
+    }
     const isFun = typeof subject === 'function'
-    if (isFun && this.registry.has(subject)) { return this.registry.get(subject) }
-    if (!isFun && this.registry.has(subject.constructor)) { return this.registry.get(subject.constructor) }
+    if (isFun && this.registry.has(subject)) {
+      return this.registry.get(subject)
+    }
+    if (!isFun && this.registry.has(subject.constructor)) {
+      return this.registry.get(subject.constructor)
+    }
     return isFun ? subject.name : subject.constructor.name
   }
 

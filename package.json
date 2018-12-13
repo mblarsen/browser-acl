@@ -35,5 +35,10 @@
     "jest": "^21.2.1",
     "poi": "^9.6.13"
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
   "thanks": "https://flattr.com/@mblarsen"
 }

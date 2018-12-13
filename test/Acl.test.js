@@ -1,4 +1,4 @@
-import Acl, {GlobalRule} from '../index.js'
+import Acl, { GlobalRule } from '../index.js'
 
 class User {}
 class Apple {}
@@ -19,8 +19,8 @@ describe('The basics', () => {
   test('Global rules', () => {
     const acl = new Acl()
     acl.rule('purgeInactive', user => user.isAdmin)
-    expect(acl.can({isAdmin: true}, 'purgeInactive')).toBe(true)
-    expect(acl.can({isAdmin: false}, 'purgeInactive')).toBe(false)
+    expect(acl.can({ isAdmin: true }, 'purgeInactive')).toBe(true)
+    expect(acl.can({ isAdmin: false }, 'purgeInactive')).toBe(false)
     acl.rule('contact')
     expect(acl.can({}, 'contact')).toBe(true)
     acl.rule('contact', false)
@@ -71,7 +71,7 @@ describe('The basics', () => {
   test('Can eat apples (params)', () => {
     const acl = new Acl()
     acl.mixin(User)
-    acl.rule(['eat'], Apple, function (user, apple, _, param) {
+    acl.rule(['eat'], Apple, function(user, apple, _, param) {
       expect(param).toBe('worm')
       return true
     })
@@ -145,25 +145,29 @@ describe('Multiple', () => {
 
 describe('Strict mode', () => {
   test('Throws on unknown verb', () => {
-    const acl = new Acl({strict: true})
+    const acl = new Acl({ strict: true })
     acl.mixin(User)
     acl.rule('grow', Apple)
     const user = new User()
-    expect(user.can.bind(user, 'eat', new Apple())).toThrow('Unknown verb "eat"')
+    expect(user.can.bind(user, 'eat', new Apple())).toThrow(
+      'Unknown verb "eat"',
+    )
   })
 
   test('Throws on unknown subject', () => {
-    const acl = new Acl({strict: true})
+    const acl = new Acl({ strict: true })
     acl.mixin(User)
     const user = new User()
-    expect(user.can.bind(user, 'eat', new Apple())).toThrow('Unknown subject "Apple"')
+    expect(user.can.bind(user, 'eat', new Apple())).toThrow(
+      'Unknown subject "Apple"',
+    )
   })
 })
 
 describe('Registry and mapper', () => {
   test('Can register a class', () => {
-    const acl = new Acl({strict: true})
-    class Foo { }
+    const acl = new Acl({ strict: true })
+    class Foo {}
     acl.register(Foo, 'User')
     expect(acl.registry.has(Foo)).toBe(true)
     expect(acl.registry.get(Foo)).toBe('User')
@@ -172,11 +176,13 @@ describe('Registry and mapper', () => {
   })
 
   test('Custom mapper', () => {
-    const acl = new Acl({strict: true})
-    const item = {type: 'Item'}
+    const acl = new Acl({ strict: true })
+    const item = { type: 'Item' }
     acl.rule('lock', 'Item')
-    expect(acl.can.bind(acl, {}, 'lock', item)).toThrow('Unknown subject "Object"')
-    acl.subjectMapper = s => typeof s === 'string' ? s : s.type
+    expect(acl.can.bind(acl, {}, 'lock', item)).toThrow(
+      'Unknown subject "Object"',
+    )
+    acl.subjectMapper = s => (typeof s === 'string' ? s : s.type)
     expect(acl.can({}, 'lock', item)).toBe(true)
   })
 })
@@ -199,7 +205,9 @@ describe('Reset and remove', () => {
     acl.reset()
     expect(acl.registry.has(Job)).toBe(false)
     expect(acl.can.bind(acl, {}, 'view', job)).toThrow('Unknown subject "Job"')
-    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow('Unknown subject "Apple"')
+    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
+      'Unknown subject "Apple"',
+    )
   })
 
   test('Remove rules', () => {
@@ -211,8 +219,12 @@ describe('Reset and remove', () => {
     expect(acl.can({}, 'eat', apple)).toBe(true)
     expect(acl.can({}, 'discard', apple)).toBe(true)
     acl.removeRules(apple)
-    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow('Unknown subject "Apple"')
-    expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow('Unknown subject "Apple"')
+    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
+      'Unknown subject "Apple"',
+    )
+    expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow(
+      'Unknown subject "Apple"',
+    )
   })
 
   test('Remove rules, single', () => {
@@ -227,7 +239,9 @@ describe('Reset and remove', () => {
     acl.removeRules(apple, 'discard')
     expect(acl.registry.has(Apple)).toBe(true)
     expect(acl.can({}, 'eat', apple)).toBe(true)
-    expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow('Unknown verb "discard"')
+    expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow(
+      'Unknown verb "discard"',
+    )
   })
 
   test('Remove policy', () => {
@@ -263,7 +277,9 @@ describe('Reset and remove', () => {
     acl.removeAll(apple)
     expect(acl.registry.has(Job)).toBe(true)
     expect(acl.can.bind(acl, {}, 'view', job)).toThrow('Unknown subject "Job"')
-    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow('Unknown subject "Apple"')
+    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
+      'Unknown subject "Apple"',
+    )
   })
 })
 
@@ -276,25 +292,31 @@ describe('More complex cases', () => {
 
     const company = {
       users: [
-        {user: owner, role: 'owner'},
-        {user: coworker, role: 'coworker'}
-      ]
+        { user: owner, role: 'owner' },
+        { user: coworker, role: 'coworker' },
+      ],
     }
 
     const job = new Job({
       users: [
-        {user: owner, role: 'owner'},
-        {user: coworker, role: 'coworker'}
-      ]
+        { user: owner, role: 'owner' },
+        { user: coworker, role: 'coworker' },
+      ],
     })
 
-    acl.rule(['create'], Job, (user) => {
-      return company.users.find(rel => rel.user === user && rel.role === 'owner')
+    acl.rule(['create'], Job, user => {
+      return company.users.find(
+        rel => rel.user === user && rel.role === 'owner',
+      )
     })
 
     acl.rule(['view'], Job, (user, subject) => {
-      return subject.users.find(rel => rel.user === user) ||
-        data.company.users.find(rel => rel.user === user && rel.role === 'owner')
+      return (
+        subject.users.find(rel => rel.user === user) ||
+        data.company.users.find(
+          rel => rel.user === user && rel.role === 'owner',
+        )
+      )
     })
 
     expect(owner.can('create', Job)).toBe(true)
@@ -313,26 +335,32 @@ describe('More complex cases', () => {
     const data = {
       company: {
         users: [
-          {user: owner, role: 'owner'},
-          {user: coworker, role: 'coworker'}
-        ]
-      }
+          { user: owner, role: 'owner' },
+          { user: coworker, role: 'coworker' },
+        ],
+      },
     }
 
     const job = new Job({
       users: [
-        {user: owner, role: 'owner'},
-        {user: coworker, role: 'coworker'}
-      ]
+        { user: owner, role: 'owner' },
+        { user: coworker, role: 'coworker' },
+      ],
     })
 
     const policy = {
-      create: function (user, subject) {
-        return data.company.users.find(rel => rel.user === user && rel.role === 'owner')
+      create: function(user, subject) {
+        return data.company.users.find(
+          rel => rel.user === user && rel.role === 'owner',
+        )
       },
-      view: function (user, subject) {
-        return subject.users.find(rel => rel.user === user) ||
-          data.company.users.find(rel => rel.user === user && rel.role === 'owner')
+      view: function(user, subject) {
+        return (
+          subject.users.find(rel => rel.user === user) ||
+          data.company.users.find(
+            rel => rel.user === user && rel.role === 'owner',
+          )
+        )
       },
     }
 
@@ -370,8 +398,8 @@ describe('More complex cases', () => {
 
   test('Policy beforeAll', () => {
     const acl = new Acl()
-    function JobPolicy () {
-      this.beforeAll = function (verb, user) {
+    function JobPolicy() {
+      this.beforeAll = function(verb, user) {
         if (user.isAdmin) {
           return true
         }
@@ -386,10 +414,10 @@ describe('More complex cases', () => {
     const job = new Job()
     acl.policy(JobPolicy, Job)
     expect(acl.can({}, 'view', job)).toBe(true)
-    expect(acl.can({isAdmin: true}, 'view', job)).toBe(true)
+    expect(acl.can({ isAdmin: true }, 'view', job)).toBe(true)
     expect(acl.can({}, 'edit', job)).toBe(false)
-    expect(acl.can({isAdmin: true}, 'edit', job)).toBe(true)
+    expect(acl.can({ isAdmin: true }, 'edit', job)).toBe(true)
     expect(acl.can({}, 'beLazy', job)).toBe(false)
-    expect(acl.can({isAdmin: true}, 'beLazy', job)).toBe(true)
+    expect(acl.can({ isAdmin: true }, 'beLazy', job)).toBe(true)
   })
 })
