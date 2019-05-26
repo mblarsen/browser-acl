@@ -1,4 +1,3 @@
-
 export const GlobalRule = 'GLOBAL_RULE'
 
 const assumeGlobal = sub =>
@@ -134,17 +133,17 @@ export default class Acl {
    * string.
    *
    * ```javascript
-   *   acl->can(user, 'create', Post)
-   *   acl->can(user, 'edit', post)
-   *   acl->can(user, 'edit', post, additionalParameter, secondAdditionalParameter)
+   *   acl.can(user, 'create', Post)
+   *   acl.can(user, 'edit', post)
+   *   acl.can(user, 'edit', post, additionalParameter, secondAdditionalParameter)
    * ```
    *
    * Note that these are also available on the user if you've used
    * the mixin:
    *
    * ```javascript
-   *   user->can('create', Post)
-   *   user->can('edit', post)
+   *   user.can('create', Post)
+   *   user.can('edit', post)
    * ```
    *
    * @access public

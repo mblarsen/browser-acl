@@ -174,8 +174,8 @@ Simple ACL library for the browser inspired by Laravel's guards and policies.
 **Parameters**
 
 -   `$0` **[Object][14]**  (optional, default `{}`)
--   `$0.strict` (optional, default `false`)
--   `options` **[Object][14]**
+    -   `$0.strict`   (optional, default `false`)
+-   `options` **[Object][14]** 
 -   `null` **[Boolean][15]** {strict=false}={} Errors out on unknown verbs when true
 
 ### rule
@@ -199,11 +199,11 @@ acl.rule('purgeInactive', user => user.isAdmin) // global rule
 
 **Parameters**
 
--   `verbs` **([Array][16]&lt;[string][17]> | [string][17])**
+-   `verbs` **([Array][16]&lt;[string][17]> | [string][17])** 
 -   `subject` **([Function][18] \| [Object][14] \| [string][17])** ?
 -   `test` **([Boolean][15] \| [Function][18])** =true (optional, default `true`)
 
-Returns **[Acl][19]**
+Returns **[Acl][19]** 
 
 ### policy
 
@@ -236,9 +236,9 @@ Policies are useful for grouping rules and adding more complex logic.
 **Parameters**
 
 -   `policy` **[Object][14]** A policy with properties that are verbs
--   `subject` **([Function][18] \| [Object][14] \| [string][17])**
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
 
-Returns **[Acl][19]**
+Returns **[Acl][19]** 
 
 ### register
 
@@ -254,7 +254,7 @@ bud it can be used manually through `this.registry`.
 **Parameters**
 
 -   `klass` **[Function][18]** A class or constructor function
--   `subjectName` **[string][17]**
+-   `subjectName` **[string][17]** 
 
 ### can
 
@@ -269,24 +269,24 @@ can create a post you would pass the class function or a
 string.
 
 ```javascript
-  acl->can(user, 'create', Post)
-  acl->can(user, 'edit', post)
-  acl->can(user, 'edit', post, additionalParameter, secondAdditionalParameter)
+  acl.can(user, 'create', Post)
+  acl.can(user, 'edit', post)
+  acl.can(user, 'edit', post, additionalParameter, secondAdditionalParameter)
 ```
 
 Note that these are also available on the user if you've used
 the mixin:
 
 ```javascript
-  user->can('create', Post)
-  user->can('edit', post)
+  user.can('create', Post)
+  user.can('edit', post)
 ```
 
 **Parameters**
 
--   `user` **[Object][14]**
--   `verb` **[string][17]**
--   `subject` **([Function][18] \| [Object][14] \| [string][17])**
+-   `user` **[Object][14]** 
+-   `verb` **[string][17]** 
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -300,9 +300,9 @@ Note the subjects do not need to be of the same kind.
 
 **Parameters**
 
--   `user` **[Object][14]**
--   `verb`
--   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>**
+-   `user` **[Object][14]** 
+-   `verb`  
+-   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>** 
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -316,9 +316,9 @@ Note the subjects do not need to be of the same kind.
 
 **Parameters**
 
--   `user` **[Object][14]**
--   `verb`
--   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>**
+-   `user` **[Object][14]** 
+-   `verb`  
+-   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>** 
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -352,7 +352,7 @@ passing in an instance of a class.
 Override this function if your models do not match this approach.
 
 E.g. say that you are using plain data objects with a type property
-to indicate the "class" of the object.
+to indicate the type of the object.
 
 ```javascript
   acl.subjectMapper = s => typeof s === 'string' ? s : s.type
@@ -374,7 +374,7 @@ classes to subject name.
 
 **Parameters**
 
--   `subject` **([Function][18] \| [Object][14] \| [string][17])**
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
 
 Returns **[string][17]** A subject
 
@@ -382,7 +382,7 @@ Returns **[string][17]** A subject
 
 Removes all rules, policies, and registrations
 
-Returns **[Acl][19]**
+Returns **[Acl][19]** 
 
 ### removeRules
 
@@ -392,10 +392,10 @@ Optionally limit to a single verb.
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])**
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
 -   `verb` **[String][17]?** an optional verb (optional, default `null`)
 
-Returns **[Acl][19]**
+Returns **[Acl][19]** 
 
 ### removePolicy
 
@@ -403,9 +403,9 @@ Remove policy for subject
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])**
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
 
-Returns **[Acl][19]**
+Returns **[Acl][19]** 
 
 ### removeAll
 
@@ -413,9 +413,9 @@ Convenience method for removing all rules and policies for a subject
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])**
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
 
-Returns **[Acl][19]**
+Returns **[Acl][19]** 
 
 [1]: #acl
 
@@ -454,5 +454,3 @@ Returns **[Acl][19]**
 [18]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
 [19]: #acl
-
-
