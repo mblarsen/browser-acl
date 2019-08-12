@@ -26,7 +26,7 @@
     "build": "rollup -c",
     "build:watch": "rollup -c -w",
     "preversion": "npm run test",
-    "version": "npm run build && git add -A dist",
+    "version": "npm run build && git add -A dist && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "postversion": "git push && git push --tags",
     "build:docs": "documentation build index.js -f md -o dist/docs.md"
   },
@@ -34,6 +34,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "babel-jest": "^24.8.0",
+    "conventional-changelog-cli": "^2.0.23",
     "documentation": "^6.1.0",
     "jest": "^24.8.0",
     "rollup": "^1.19.4",
