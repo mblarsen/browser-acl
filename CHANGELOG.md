@@ -1,3 +1,12 @@
+## [0.7.2](https://github.com/mblarsen/browser-acl/compare/v0.7.1...v0.7.2) (2019-08-12)
+
+
+### Bug Fixes
+
+* Change test values to avoid false result ([1162b86](https://github.com/mblarsen/browser-acl/commit/1162b86))
+
+
+
 ## [0.7.1](https://github.com/mblarsen/browser-acl/compare/v0.7.0...v0.7.1) (2018-08-17)
 
 
