@@ -1,7 +1,4 @@
 node_modules/
-.babelrc
-coverage/
-tags
-yarn-*
-.dat
 dist/docs.md
+tags
+package-lock.json
