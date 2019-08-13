@@ -1,7 +1,7 @@
 {
   "name": "browser-acl",
   "description": "Simple ACL library for the browser inspired by Laravel's guards and policies.",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "author": "Michael Bøcker-Larsen <m19n@pm.me>",
   "license": "MIT",
   "keywords": [
