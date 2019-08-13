@@ -12,6 +12,7 @@
   "main": "dist/browser-acl.common.js",
   "module": "dist/browser-acl.esm.js",
   "browser": "dist/browser-acl.umd.js",
+  "unpkg": "dist/browser-acl.umd.js",
   "files": [
     "dist"
   ],

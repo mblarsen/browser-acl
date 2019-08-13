@@ -11,19 +11,25 @@ export default [
         format: 'cjs',
         sourcemap: true,
         exports: 'named'
-      }, {
+      },
+      {
         file: pkg.module,
         sourcemap: true,
         format: 'esm'
       }
     ],
-    plugins: [terser()]
+    plugins: [
+      babel({
+        exclude: 'node_modules/**'
+      }),
+      terser()
+    ]
   },
   {
     input: './index.js',
     output: {
       file: pkg.browser,
-      format: 'iife',
+      format: 'umd',
       sourcemap: true,
       name: 'BrowserAcl',
       exports: 'named'
