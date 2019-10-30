@@ -29,6 +29,8 @@ acl.rule(['edit', 'delete'], Post, (user, post) => post.userId === user.id)
 acl.rule('purgeInactive', user => user.isAdmin)
 ```
 
+[![Try browser-acl on RunKit](https://badge.runkitcdn.com/browser-acl.svg)](https://npm.runkit.com/browser-acl)
+
 Policies are also supported:
 
 ```javascript

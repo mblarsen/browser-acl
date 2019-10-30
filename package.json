@@ -49,5 +49,6 @@
     "singleQuote": true,
     "trailingComma": "all"
   },
+  "runkitExampleFilename": "runkit.js",
   "thanks": "https://flattr.com/@mblarsen"
 }
