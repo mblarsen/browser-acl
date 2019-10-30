@@ -1,3 +1,7 @@
+## [0.7.4](https://github.com/mblarsen/browser-acl/compare/v0.7.3...v0.7.4) (2019-10-30)
+
+
+
 ## [0.7.3](https://github.com/mblarsen/browser-acl/compare/v0.7.2...v0.7.3) (2019-08-13)
 
 
