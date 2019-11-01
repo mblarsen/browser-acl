@@ -14,7 +14,8 @@
   "browser": "dist/browser-acl.umd.js",
   "unpkg": "dist/browser-acl.umd.js",
   "files": [
-    "dist"
+    "dist",
+    "runkit.js"
   ],
   "repository": {
     "type": "git",
