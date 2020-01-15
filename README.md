@@ -31,13 +31,17 @@ acl.rule('purgeInactive', user => user.isAdmin)
 
 [![Try browser-acl on RunKit](https://badge.runkitcdn.com/browser-acl.svg)](https://npm.runkit.com/browser-acl)
 
-Policies are also supported:
+Policies (rules through objects or classes) are also supported:
 
 ```javascript
+// using an object
 acl.policy({
   view: true,
   edit: (user, post) => post.userId === user.id),
 }, Post)
+
+// using a class
+acl.policy(OrganizationPolicy, Organization)
 ```
 
 Note: policies takes precedence over rules.
@@ -46,13 +50,13 @@ Note: policies takes precedence over rules.
 
 ```javascript
 // true if user owns post
-acl.can(user, 'edit', post)
+acl.can('edit', post)
 
 // true if user owns at least posts
-acl.some(user, 'edit', posts)
+acl.some('edit', posts)
 
 // true if user owns all posts
-acl.every(user, 'edit', posts)
+acl.every('edit', posts)
 ```
 
 You can add mixins to your user class:
@@ -65,61 +69,72 @@ user.can.some('edit', posts)
 user.can.every('edit', posts)
 ```
 
-## Subject mapping
+### Subject mapping
 
-> The process of mapping input to rules
+> The process of mapping a subject to rules
 
-The default subject mapper makes use of "poor-man's reflection", meaning it will
-use the name of the input subject's constructor to group the rules.
+A **subject** is an item, an object, an instance of a class.
 
-When using webpack or similar this method can break if you are not careful. Since
-code minifiers will rename functions you have to make sure you only rely on the
-function to set up your rules and asking for permission.
-
-### Meeeh
+The default subject mapper makes use of ["poor-man's reflection"](https://github.com/mblarsen/browser-acl/blob/f52cc8e704681cb33d4867e7a217e990444baa6a/index.js#L248-L298), that uses the
+name of the subject's constructor to group the rules.
 
 ```javascript
-1: acl.rule('edit', 'Post')
-2: ...
-3: acl.can(user, post) 
+class Post {}
+const post = new Post()
+post.constructor.name // The subject is: Post
+```
+
+**Warning: When using webpack or similar this method can break if you are not careful.** 
+
+Since code minifiers will rename functions you have to make sure you only rely
+on the function to set up your rules and asking for permission.
+
+```diff
+acl.rule('edit', 'Post', ...)
+acl.can('edit', 'Post')  👍 works as expected
+acl.can('edit', Post)    👎 'Post' isn't the name as you'd expect
+acl.can('edit', post)    👎 same story here
 ```
 
 If your build process minifies your code (specifically mangling of function and class
 names), this will break in line 3 since the constructor of post will likely not be `Post`
 but rather a single letter or a name prefixed with `__WEBPACK_IMPORTED_MODULE`.
 
-### Better
-
-```javascript
-1: acl.rule('edit', Post)
-2: ...
-3: acl.can(user, post) 
+```diff
+- acl.rule('edit', 'Post', ...)
++ acl.rule('edit', Post, ...)
+  acl.can('edit', 'Post')  👍 works as expected
+  acl.can('edit', Post)    👍 and so does this
+  acl.can('edit', post)    👍 this too, but see below
 ```
 
-Here `Post` in line 1 the class or constructor function is passed in, and whatever that name is 
-after minification, is used to register the rules. As long as the same import is used 
-throughout your code base it will work. 
+Passing the class or function, `Post` and whatever that name is after
+minification, is used to register the rules. As long as the same import is used
+throughout your code base it will work and you don't need to explicitly
+register a model.
 
-### Best
+#### Best practice
 
-```javascript
-1: acl.register(Post, 'Post')
-2: ...
-3: acl.rule('create', 'Post') // <-- works as expected
-4: ...
-5: acl.rule('edit', Post)     // <-- and so does this
-6: acl.rule('edit', post)     // <-- and so does this
+```diff
++ acl.register(Post, 'Post')
+  acl.can('edit', 'Post')  👍 works as expected
+  acl.can('edit', Post)    👍 and so does this
+  acl.can('edit', post)    👍 this too
 ```
 
-This basically sets up an alias for Post the class or constructor function, so that you can refer 
-to it as 'Post'. 
+If you are using *plain objects* you may want to override the `subjectMapper` with
+a custom implementation.
 
-## Alternatives to classes and constructor functions
+```javascript
+acl.subjectMapper = subject => typeof subject === 'string'
+  ? subject
+  : subject.type
 
-You can also override the `subjectMapper` function and a property to you objects with
-the subject name.
+const post = { type: 'post', id: 1, title: 'My first post' }
+acl.can('edit', post) 👍
+```
 
-See [subjectMapper](#subjectmapper)
+See more [subjectMapper](#subjectmapper)
 
 ## Additional Parameters and Global Rules
 
@@ -178,7 +193,7 @@ Simple ACL library for the browser inspired by Laravel's guards and policies.
 
 -   `$0` **[Object][14]**  (optional, default `{}`)
     -   `$0.strict`   (optional, default `false`)
--   `options` **[Object][14]** 
+-   `options` **[Object][14]**
 -   `null` **[Boolean][15]** {strict=false}={} Errors out on unknown verbs when true
 
 ### rule
@@ -202,11 +217,11 @@ acl.rule('purgeInactive', user => user.isAdmin) // global rule
 
 **Parameters**
 
--   `verbs` **([Array][16]&lt;[string][17]> | [string][17])** 
+-   `verbs` **([Array][16]&lt;[string][17]> | [string][17])**
 -   `subject` **([Function][18] \| [Object][14] \| [string][17])** ?
 -   `test` **([Boolean][15] \| [Function][18])** =true (optional, default `true`)
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### policy
 
@@ -239,9 +254,9 @@ Policies are useful for grouping rules and adding more complex logic.
 **Parameters**
 
 -   `policy` **[Object][14]** A policy with properties that are verbs
--   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])**
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### register
 
@@ -257,7 +272,7 @@ bud it can be used manually through `this.registry`.
 **Parameters**
 
 -   `klass` **[Function][18]** A class or constructor function
--   `subjectName` **[string][17]** 
+-   `subjectName` **[string][17]**
 
 ### can
 
@@ -287,9 +302,9 @@ the mixin:
 
 **Parameters**
 
--   `user` **[Object][14]** 
--   `verb` **[string][17]** 
--   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
+-   `user` **[Object][14]**
+-   `verb` **[string][17]**
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])**
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -303,9 +318,9 @@ Note the subjects do not need to be of the same kind.
 
 **Parameters**
 
--   `user` **[Object][14]** 
--   `verb`  
--   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>** 
+-   `user` **[Object][14]**
+-   `verb`
+-   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>**
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -319,9 +334,9 @@ Note the subjects do not need to be of the same kind.
 
 **Parameters**
 
--   `user` **[Object][14]** 
--   `verb`  
--   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>** 
+-   `user` **[Object][14]**
+-   `verb`
+-   `subjects` **[Array][16]&lt;([Function][18] \| [Object][14] \| [string][17])>**
 -   `args` **...any** Any other param is passed into rule
 
 Returns **any** Boolean
@@ -377,7 +392,7 @@ classes to subject name.
 
 **Parameters**
 
--   `subject` **([Function][18] \| [Object][14] \| [string][17])** 
+-   `subject` **([Function][18] \| [Object][14] \| [string][17])**
 
 Returns **[string][17]** A subject
 
@@ -385,7 +400,7 @@ Returns **[string][17]** A subject
 
 Removes all rules, policies, and registrations
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### removeRules
 
@@ -395,10 +410,10 @@ Optionally limit to a single verb.
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])**
 -   `verb` **[String][17]?** an optional verb (optional, default `null`)
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### removePolicy
 
@@ -406,9 +421,9 @@ Remove policy for subject
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])**
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 ### removeAll
 
@@ -416,9 +431,9 @@ Convenience method for removing all rules and policies for a subject
 
 **Parameters**
 
--   `subject` **([Object][14] \| [Function][18] \| [String][17])** 
+-   `subject` **([Object][14] \| [Function][18] \| [String][17])**
 
-Returns **[Acl][19]** 
+Returns **[Acl][19]**
 
 [1]: #acl
 
