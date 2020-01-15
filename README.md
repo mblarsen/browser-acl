@@ -14,7 +14,7 @@ Go to [vue-browser-acl](https://github.com/mblarsen/vue-browser-acl) for the off
 ## Install
 
 ```
-yarn add browser-acl
+npm i browser-acl
 ```
 
 ## Setup
