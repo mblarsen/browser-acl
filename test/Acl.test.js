@@ -159,7 +159,7 @@ describe('Strict mode', () => {
     acl.mixin(User)
     const user = new User()
     expect(user.can.bind(user, 'eat', new Apple())).toThrow(
-      'Unknown subject "Apple"',
+      'No rules for subject "Apple"',
     )
   })
 })
@@ -180,7 +180,7 @@ describe('Registry and mapper', () => {
     const item = { type: 'Item' }
     acl.rule('lock', 'Item')
     expect(acl.can.bind(acl, {}, 'lock', item)).toThrow(
-      'Unknown subject "Object"',
+      'No rules for subject "Object"',
     )
     acl.subjectMapper = s => (typeof s === 'string' ? s : s.type)
     expect(acl.can({}, 'lock', item)).toBe(true)
@@ -204,9 +204,11 @@ describe('Reset and remove', () => {
     expect(acl.can({}, 'eat', apple)).toBe(true)
     acl.reset()
     expect(acl.registry.has(Job)).toBe(false)
-    expect(acl.can.bind(acl, {}, 'view', job)).toThrow('Unknown subject "Job"')
+    expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
+      'No rules for subject "Job"',
+    )
     expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
-      'Unknown subject "Apple"',
+      'No rules for subject "Apple"',
     )
   })
 
@@ -220,10 +222,10 @@ describe('Reset and remove', () => {
     expect(acl.can({}, 'discard', apple)).toBe(true)
     acl.removeRules(apple)
     expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
-      'Unknown subject "Apple"',
+      'No rules for subject "Apple"',
     )
     expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow(
-      'Unknown subject "Apple"',
+      'No rules for subject "Apple"',
     )
   })
 
@@ -256,7 +258,9 @@ describe('Reset and remove', () => {
     expect(acl.can({}, 'view', job)).toBe(true)
     acl.removePolicy(job)
     expect(acl.registry.has(Job)).toBe(true)
-    expect(acl.can.bind(acl, {}, 'view', job)).toThrow('Unknown subject "Job"')
+    expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
+      'No rules for subject "Job"',
+    )
   })
 
   test('Remove all', () => {
@@ -276,9 +280,11 @@ describe('Reset and remove', () => {
     acl.removeAll(job)
     acl.removeAll(apple)
     expect(acl.registry.has(Job)).toBe(true)
-    expect(acl.can.bind(acl, {}, 'view', job)).toThrow('Unknown subject "Job"')
+    expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
+      'No rules for subject "Job"',
+    )
     expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
-      'Unknown subject "Apple"',
+      'No rules for subject "Apple"',
     )
   })
 })

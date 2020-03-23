@@ -162,7 +162,7 @@ export default class Acl {
 
     if (typeof rules === 'undefined') {
       if (this.strict) {
-        throw new Error(`Unknown subject "${subjectName}"`)
+        throw new Error(`No rules for subject "${subjectName}"`)
       }
       return false
     }
