@@ -35,7 +35,7 @@
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
-    "babel-jest": "^24.8.0",
+    "babel-jest": "^25.2.0",
     "conventional-changelog-cli": "^2.0.31",
     "documentation": "^12.1.4",
     "jest": "^24.8.0",
