@@ -38,7 +38,7 @@
     "babel-jest": "^24.8.0",
     "conventional-changelog-cli": "^2.0.31",
     "documentation": "^12.1.4",
-    "jest": "^24.8.0",
+    "jest": "^25.2.3",
     "rollup": "^1.27.9",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.0.2",
