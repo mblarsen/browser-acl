@@ -50,13 +50,13 @@ Note: policies takes precedence over rules.
 
 ```javascript
 // true if user owns post
-acl.can('edit', post)
+acl.can(user, 'edit', post)
 
 // true if user owns at least posts
-acl.some('edit', posts)
+acl.some(user, 'edit', posts)
 
 // true if user owns all posts
-acl.every('edit', posts)
+acl.every(user, 'edit', posts)
 ```
 
 You can add mixins to your user class:
@@ -91,9 +91,9 @@ on the function to set up your rules and asking for permission.
 
 ```diff
 acl.rule('edit', 'Post', ...)
-acl.can('edit', 'Post')  👍 works as expected
-acl.can('edit', Post)    👎 'Post' isn't the name as you'd expect
-acl.can('edit', post)    👎 same story here
+acl.can(user, 'edit', 'Post')  👍 works as expected
+acl.can(user, 'edit', Post)    👎 'Post' isn't the name as you'd expect
+acl.can(user, 'edit', post)    👎 same story here
 ```
 
 If your build process minifies your code (specifically mangling of function and class
@@ -103,9 +103,9 @@ but rather a single letter or a name prefixed with `__WEBPACK_IMPORTED_MODULE`.
 ```diff
 - acl.rule('edit', 'Post', ...)
 + acl.rule('edit', Post, ...)
-  acl.can('edit', 'Post')  👍 works as expected
-  acl.can('edit', Post)    👍 and so does this
-  acl.can('edit', post)    👍 this too, but see below
+  acl.can(user, 'edit', 'Post')  👍 works as expected
+  acl.can(user, 'edit', Post)    👍 and so does this
+  acl.can(user, 'edit', post)    👍 this too, but see below
 ```
 
 Passing the class or function, `Post` and whatever that name is after
@@ -117,9 +117,9 @@ register a model.
 
 ```diff
 + acl.register(Post, 'Post')
-  acl.can('edit', 'Post')  👍 works as expected
-  acl.can('edit', Post)    👍 and so does this
-  acl.can('edit', post)    👍 this too
+  acl.can(user, 'edit', 'Post')  👍 works as expected
+  acl.can(user, 'edit', Post)    👍 and so does this
+  acl.can(user, 'edit', post)    👍 this too
 ```
 
 If you are using *plain objects* you may want to override the `subjectMapper` with
@@ -131,7 +131,7 @@ acl.subjectMapper = subject => typeof subject === 'string'
   : subject.type
 
 const post = { type: 'post', id: 1, title: 'My first post' }
-acl.can('edit', post) 👍
+acl.can(user, 'edit', post) 👍
 ```
 
 See more [subjectMapper](#subjectmapper)
@@ -142,14 +142,14 @@ You can define global rules by omitting the subject when defining rules.
 
 ```javascript
 acl.rule('purgeInactive', user => user.admin)
-acl.can('purgeInactive')
+acl.can(user, 'purgeInactive')
 ```
 
 Also you can pass additional parameters to the handler like this:
 
 ```javascript
 acl.rule('edit', Post, (user, post, verb, additionalParameter) => true)
-acl.can('edit', post, additionalParameter)
+acl.can(user, 'edit', post, additionalParameter)
 ```
 
 However, you cannot combine the two without explicitly stating that you are
@@ -159,7 +159,7 @@ subject.
 ```javascript
 import {GlobalRule} from 'browser-acl'
 acl.rule('purgeInactive', GlobalRule, user => user.admin)
-acl.can('purgeInactive', GlobalRule, additionalParameter)
+acl.can(user, 'purgeInactive', GlobalRule, additionalParameter)
 ```
 
 Note: When defining the rule you can omit it, but is is required for `can`.
