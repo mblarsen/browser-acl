@@ -33,7 +33,7 @@
     "test": "jest --config jest.config.json",
     "test:watch": "jest --config jest.config.json --watchAll",
     "preversion": "npm run test",
-    "version": "npm run build && git add -A dist",
+    "version": "npm run build && git add -A ./dist ./index.d.ts",
     "postversion": "git push && git push --tags"
   },
   "devDependencies": {
