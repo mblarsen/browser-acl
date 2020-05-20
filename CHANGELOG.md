@@ -1,5 +1,7 @@
 ## next
 
+## 0.8.0
+
 - refactor: rewrite in TypeScript
 
 ## [0.7.5](https://github.com/mblarsen/browser-acl/compare/v0.7.4...v0.7.5) (2019-11-01)
