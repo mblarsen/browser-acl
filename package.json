@@ -9,7 +9,7 @@
     "acl",
     "permissions"
   ],
-  "source": "./index.ts",
+  "source": "index.ts",
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",
   "module": "dist/index.module.js",
@@ -17,6 +17,7 @@
   "files": [
     "dist",
     "types",
+    "index.ts",
     "index.d.ts",
     "runkit.js"
   ],
