@@ -17,6 +17,6 @@ export type SubjectName = string | undefined
 
 export type SubjectOrTest = Subject | boolean
 
-export type TestFunction = (user?: object, ...args: any[]) => boolean
+export type TestFunction = (user?: any, ...args: any[]) => boolean
 
 export type Test = boolean | TestFunction
