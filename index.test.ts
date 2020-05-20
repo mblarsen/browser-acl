@@ -1,9 +1,21 @@
-import Acl, { GlobalRule } from '../index.js'
+import Acl from './index'
+import { Policy } from './types/browser-acl'
 
-class User {}
-class Apple {}
+interface MixinUser {
+  can?: Function
+}
+
+class User {
+  [key: string]: any
+}
+
+class Apple {
+  [key: string]: any
+}
 class Job {
-  constructor(data) {
+  [key: string]: any
+
+  constructor(data?: any) {
     Object.assign(this, data || {})
   }
 }
@@ -12,16 +24,16 @@ describe('The basics', () => {
   test('Acl mixin', () => {
     const acl = new Acl()
     acl.mixin(User)
-    const user = new User()
+    const user: MixinUser = new User()
     expect(user.can).toBeDefined()
   })
 
   test('Global rules', () => {
     const acl = new Acl()
-    acl.rule('purgeInactive', user => user.isAdmin)
-    expect(acl.can({ isAdmin: true }, 'purgeInactive')).toBe(true)
+    acl.rule('purgeInactive', (user: User) => user.isAdmin)
+    expect(acl.can({ isAdmin: true } as User, 'purgeInactive')).toBe(true)
     expect(acl.can({ isAdmin: false }, 'purgeInactive')).toBe(false)
-    acl.rule('contact')
+    acl.rule('contact', true)
     expect(acl.can({}, 'contact')).toBe(true)
     acl.rule('linger', false)
     expect(acl.can({}, 'linger')).toBe(false)
@@ -71,7 +83,7 @@ describe('The basics', () => {
   test('Can eat apples (params)', () => {
     const acl = new Acl()
     acl.mixin(User)
-    acl.rule(['eat'], Apple, function(user, apple, _, param) {
+    acl.rule(['eat'], Apple, function (_0, _1, _2, param: string) {
       expect(param).toBe('worm')
       return true
     })
@@ -182,7 +194,8 @@ describe('Registry and mapper', () => {
     expect(acl.can.bind(acl, {}, 'lock', item)).toThrow(
       'No rules for subject "Object"',
     )
-    acl.subjectMapper = s => (typeof s === 'string' ? s : s.type)
+    acl.subjectMapper = (s: string | { [key: string]: any }) =>
+      typeof s === 'string' ? s : s.type
     expect(acl.can({}, 'lock', item)).toBe(true)
   })
 })
@@ -190,7 +203,7 @@ describe('Registry and mapper', () => {
 describe('Reset and remove', () => {
   test('Reset', () => {
     const acl = new Acl()
-    function JobPolicy() {
+    function JobPolicy(this: Policy) {
       this.view = true
     }
     const job = new Job()
@@ -248,7 +261,7 @@ describe('Reset and remove', () => {
 
   test('Remove policy', () => {
     const acl = new Acl()
-    function JobPolicy() {
+    function JobPolicy(this: Policy) {
       this.view = true
     }
     const job = new Job()
@@ -265,7 +278,7 @@ describe('Reset and remove', () => {
 
   test('Remove all', () => {
     const acl = new Acl()
-    function JobPolicy() {
+    function JobPolicy(this: Policy) {
       this.view = true
     }
     const job = new Job()
@@ -296,6 +309,15 @@ describe('More complex cases', () => {
     const owner = new User()
     const coworker = new User()
 
+    const data = {
+      company: {
+        users: [
+          { user: owner, role: 'owner' },
+          { user: coworker, role: 'coworker' },
+        ],
+      },
+    }
+
     const company = {
       users: [
         { user: owner, role: 'owner' },
@@ -310,17 +332,17 @@ describe('More complex cases', () => {
       ],
     })
 
-    acl.rule(['create'], Job, user => {
-      return company.users.find(
-        rel => rel.user === user && rel.role === 'owner',
+    acl.rule(['create'], Job, (user?: object): boolean => {
+      return Boolean(
+        company.users.find((rel) => rel.user === user && rel.role === 'owner'),
       )
     })
 
     acl.rule(['view'], Job, (user, subject) => {
       return (
-        subject.users.find(rel => rel.user === user) ||
+        subject.users.find((rel: any) => rel.user === user) ||
         data.company.users.find(
-          rel => rel.user === user && rel.role === 'owner',
+          (rel) => rel.user === user && rel.role === 'owner',
         )
       )
     })
@@ -355,16 +377,16 @@ describe('More complex cases', () => {
     })
 
     const policy = {
-      create: function(user, subject) {
+      create: function (user: any) {
         return data.company.users.find(
-          rel => rel.user === user && rel.role === 'owner',
+          (rel) => rel.user === user && rel.role === 'owner',
         )
       },
-      view: function(user, subject) {
+      view: function (user: any, subject: any) {
         return (
-          subject.users.find(rel => rel.user === user) ||
+          subject.users.find((rel: any) => rel.user === user) ||
           data.company.users.find(
-            rel => rel.user === user && rel.role === 'owner',
+            (rel) => rel.user === user && rel.role === 'owner',
           )
         )
       },
@@ -381,7 +403,7 @@ describe('More complex cases', () => {
 
   test('Policy newed', () => {
     const acl = new Acl()
-    function JobPolicy() {
+    function JobPolicy(this: Policy) {
       this.view = true
     }
     acl.policy(JobPolicy, Job)
@@ -391,7 +413,7 @@ describe('More complex cases', () => {
 
   test('Policy overwrites rules', () => {
     const acl = new Acl()
-    function JobPolicy() {
+    function JobPolicy(this: Policy) {
       this.view = true
     }
     const job = new Job()
@@ -404,8 +426,8 @@ describe('More complex cases', () => {
 
   test('Policy beforeAll', () => {
     const acl = new Acl()
-    function JobPolicy() {
-      this.beforeAll = function(verb, user) {
+    function JobPolicy(this: Policy) {
+      this.beforeAll = function (verb: string, user: any) {
         if (user.isAdmin) {
           return true
         }
