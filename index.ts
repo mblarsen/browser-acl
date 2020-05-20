@@ -8,8 +8,6 @@ import {
   Policy,
 } from './types'
 
-export const GlobalRule = 'GLOBAL_RULE'
-
 const assumeGlobal = (sub: any): boolean =>
   typeof sub === 'boolean' ||
   typeof sub === 'undefined' ||
@@ -18,7 +16,9 @@ const assumeGlobal = (sub: any): boolean =>
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  */
-export default class Acl {
+class Acl {
+  static GlobalRule = 'GLOBAL_RULE'
+
   strict: boolean
   rules: Map<SubjectName, { [key: string]: Test }>
   policies: Map<SubjectName | undefined, Policy>
@@ -60,7 +60,7 @@ export default class Acl {
     let subject_: Subject
     if (assumeGlobal(subject)) {
       test = typeof subject === 'undefined' ? true : (subject as Test)
-      subject_ = GlobalRule
+      subject_ = Acl.GlobalRule
     } else {
       subject_ = subject as Subject
     }
@@ -161,7 +161,7 @@ export default class Acl {
     subject: Subject | undefined = undefined,
     ...args: any[]
   ) {
-    subject = typeof subject === 'undefined' ? GlobalRule : subject
+    subject = typeof subject === 'undefined' ? Acl.GlobalRule : subject
     const subjectName = this.subjectMapper(subject)
 
     const policy = this.policies.get(subjectName)
@@ -355,3 +355,5 @@ export default class Acl {
     return this
   }
 }
+
+export default Acl

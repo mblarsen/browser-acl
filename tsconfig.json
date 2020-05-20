@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "outDir": "./dist",
-    "lib": ["ES2015", "dom"],
-    "strict": true,
-    "target": "ES5"
+    "strict": true
   },
   "exclude": ["node_modules", "**/*.test.ts", "dist"]
 }

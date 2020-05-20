@@ -1,9 +1,9 @@
-import { Verb, Subject, SubjectName, SubjectOrTest, Test, Options, Policy } from './types';
-export declare const GlobalRule = "GLOBAL_RULE";
+import { Verb, Subject, SubjectName, SubjectOrTest, Test, Options, Policy } from '../types';
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  */
-export default class Acl {
+declare class Acl {
+    static GlobalRule: string;
     strict: boolean;
     rules: Map<SubjectName, {
         [key: string]: Test;
@@ -196,3 +196,4 @@ export default class Acl {
      */
     removeAll(subject: Subject): this;
 }
+export default Acl;

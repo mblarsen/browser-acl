@@ -9,7 +9,11 @@
     "acl",
     "permissions"
   ],
+  "source": "./index.ts",
   "main": "dist/index.js",
+  "umd:main": "dist/index.umd.js",
+  "module": "dist/index.module.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "types",
@@ -22,8 +26,8 @@
   "bugs": "https://github.com/mblarsen/browser-acl/issues",
   "scripts": {
     "prebuild": "rm -rf ./dist",
-    "build": "tsc",
-    "postbuild": "cp -r ./types ./dist",
+    "build": "microbundle build --tsconfig ./tsconfig.json --name BrowserAcl",
+    "postbuild": "sed -i 's/.\\/types/..\\/types/' dist/index.d.ts",
     "test": "jest --config jest.config.json",
     "test:watch": "jest --config jest.config.json --watchAll",
     "preversion": "npm run test",
@@ -37,6 +41,7 @@
     "@types/jest": "^25.2.3",
     "babel-jest": "^26.0.1",
     "jest": "^26.0.1",
+    "microbundle": "^0.12.0",
     "ts-jest": "^26.0.0",
     "typescript": "^3.9.3"
   },
