@@ -1,6 +1,14 @@
-export const GlobalRule = 'GLOBAL_RULE'
+import {
+  Verb,
+  Subject,
+  SubjectName,
+  SubjectOrTest,
+  Test,
+  Options,
+  Policy,
+} from './types'
 
-const assumeGlobal = sub =>
+const assumeGlobal = (sub: any): boolean =>
   typeof sub === 'boolean' ||
   typeof sub === 'undefined' ||
   (typeof sub === 'function' && sub.name === '')
@@ -8,16 +16,20 @@ const assumeGlobal = sub =>
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  */
-export default class Acl {
+class Acl {
+  static GlobalRule = 'GLOBAL_RULE'
+
+  strict: boolean
+  rules: Map<SubjectName, { [key: string]: Test }>
+  policies: Map<SubjectName | undefined, Policy>
+  registry: WeakMap<Object, string>
+
   /**
    * browser-acl
    *
    * @access public
-   * @param {Object} options
-   * @param {Boolean} {strict=false}={} Errors out on unknown verbs when true
-   * @returns {Acl}
    */
-  constructor({ strict = false } = {}) {
+  constructor({ strict = false }: Options = {}) {
     this.strict = strict
     this.rules = new Map()
     this.policies = new Map()
@@ -43,19 +55,18 @@ export default class Acl {
    * ```
    *
    * @access public
-   * @param {Array<string>|string} verbs
-   * @param {Function|Object|string} subject?
-   * @param {Boolean|Function} test=true
-   * @returns {Acl}
    */
-  rule(verbs, subject, test = true) {
+  rule(verbs: Verb | Verb[], subject: SubjectOrTest, test: Test = true) {
+    let subject_: Subject
     if (assumeGlobal(subject)) {
-      test = typeof subject === 'undefined' ? true : subject
-      subject = GlobalRule
+      test = typeof subject === 'undefined' ? true : (subject as Test)
+      subject_ = Acl.GlobalRule
+    } else {
+      subject_ = subject as Subject
     }
-    const subjectName = this.subjectMapper(subject)
+    const subjectName = this.subjectMapper(subject_)
     const verbs_ = Array.isArray(verbs) ? verbs : [verbs]
-    verbs_.forEach(verb => {
+    verbs_.forEach((verb) => {
       const rules = this.rules.get(subjectName) || {}
       rules[verb] = test
       this.rules.set(subjectName, rules)
@@ -91,12 +102,10 @@ export default class Acl {
    * Policies are useful for grouping rules and adding more complex logic.
    *
    * @access public
-   * @param {Object} policy A policy with properties that are verbs
-   * @param {Function|Object|string} subject
-   * @returns {Acl}
    */
-  policy(policy, subject) {
-    const policy_ = typeof policy === 'function' ? new policy() : policy
+  policy(policy: Policy, subject: Subject) {
+    const policy_ =
+      typeof policy === 'function' ? new (policy as any)() : policy
     const subjectName = this.subjectMapper(subject)
     this.policies.set(subjectName, policy_)
     return this
@@ -113,10 +122,8 @@ export default class Acl {
    * bud it can be used manually through `this.registry`.
    *
    * @access public
-   * @param {Function} klass A class or constructor function
-   * @param {string} subjectName
    */
-  register(klass, subjectName) {
+  register(klass: Function, subjectName: string) {
     this.registry.set(klass, subjectName)
     return this
   }
@@ -147,14 +154,14 @@ export default class Acl {
    * ```
    *
    * @access public
-   * @param {Object} user
-   * @param {string} verb
-   * @param {Function|Object|string} subject
-   * @param {...*} args Any other param is passed into rule
-   * @return Boolean
    */
-  can(user, verb, subject, ...args) {
-    subject = typeof subject === 'undefined' ? GlobalRule : subject
+  can(
+    user: Object,
+    verb: Verb,
+    subject: Subject | undefined = undefined,
+    ...args: any[]
+  ) {
+    subject = typeof subject === 'undefined' ? Acl.GlobalRule : subject
     const subjectName = this.subjectMapper(subject)
 
     const policy = this.policies.get(subjectName)
@@ -192,13 +199,9 @@ export default class Acl {
    * Note the subjects do not need to be of the same kind.
    *
    * @access public
-   * @param {Object} user
-   * @param {Array<Function|Object|string>} subjects
-   * @param {...*} args Any other param is passed into rule
-   * @return Boolean
    */
-  some(user, verb, subjects, ...args) {
-    return subjects.some(s => this.can(user, verb, s, ...args))
+  some(user: object, verb: Verb, subjects: Subject[], ...args: any[]) {
+    return subjects.some((s) => this.can(user, verb, s, ...args))
   }
 
   /**
@@ -208,13 +211,9 @@ export default class Acl {
    * Note the subjects do not need to be of the same kind.
    *
    * @access public
-   * @param {Object} user
-   * @param {Array<Function|Object|string>} subjects
-   * @param {...*} args Any other param is passed into rule
-   * @return Boolean
    */
-  every(user, verb, subjects, ...args) {
-    return subjects.every(s => this.can(user, verb, s, ...args))
+  every(user: Object, verb: Verb, subjects: Subject[], ...args: any[]) {
+    return subjects.every((s) => this.can(user, verb, s, ...args))
   }
 
   /**
@@ -229,18 +228,29 @@ export default class Acl {
    * ```
    *
    * @access public
-   * @param {Function} User A user class or contructor function
    */
-  mixin(User) {
+  mixin(User: Function) {
     const acl = this
-    User.prototype.can = function() {
-      return acl.can(this, ...arguments)
+    User.prototype.can = function (
+      verb: Verb,
+      subject: Subject,
+      ...args: any[]
+    ) {
+      return acl.can(this, verb, subject, ...args)
     }
-    User.prototype.can.every = function() {
-      return acl.every(this, ...arguments)
+    User.prototype.can.every = function (
+      verb: Verb,
+      subjects: Subject[],
+      ...args: any[]
+    ) {
+      return acl.every(this, verb, subjects, ...args)
     }
-    User.prototype.can.some = function() {
-      return acl.some(this, ...arguments)
+    User.prototype.can.some = function (
+      verb: Verb,
+      subjects: Subject[],
+      ...args: any[]
+    ) {
+      return acl.some(this, verb, subjects, ...args)
     }
     return this
   }
@@ -280,27 +290,25 @@ export default class Acl {
    * classes to subject name.
    *
    * @access public
-   * @param {Function|Object|string} subject
-   * @returns {string} A subject
    */
-  subjectMapper(subject) {
+  subjectMapper(subject: Subject): SubjectName {
     if (typeof subject === 'string') {
       return subject
     }
-    const isFun = typeof subject === 'function'
-    if (isFun && this.registry.has(subject)) {
+    if (this.registry.has(subject)) {
       return this.registry.get(subject)
     }
-    if (!isFun && this.registry.has(subject.constructor)) {
+    if (this.registry.has(subject.constructor)) {
       return this.registry.get(subject.constructor)
     }
-    return isFun ? subject.name : subject.constructor.name
+    if (typeof subject === 'function') {
+      return subject.name
+    }
+    return subject.constructor.name
   }
 
   /**
    * Removes all rules, policies, and registrations
-   *
-   * @returns {Acl}
    */
   reset() {
     this.rules = new Map()
@@ -313,17 +321,15 @@ export default class Acl {
    * Remove rules for subject
    *
    * Optionally limit to a single verb.
-   *
-   * @param {Object|Function|String} subject
-   * @param {?String} [verb=null] an optional verb
-   * @returns {Acl}
    */
-  removeRules(subject, verb = null) {
+  removeRules(subject: Subject, verb: Verb | null = null) {
     const subjectName = this.subjectMapper(subject)
     if (this.rules.has(subjectName)) {
       if (verb) {
         const rules = this.rules.get(subjectName)
-        delete rules[verb]
+        if (rules) {
+          delete rules[verb]
+        }
         return this
       }
       this.rules.delete(subjectName)
@@ -333,11 +339,8 @@ export default class Acl {
 
   /**
    * Remove policy for subject
-   *
-   * @param {Object|Function|String} subject
-   * @returns {Acl}
    */
-  removePolicy(subject) {
+  removePolicy(subject: Subject) {
     const subjectName = this.subjectMapper(subject)
     this.policies.delete(subjectName)
     return this
@@ -345,13 +348,12 @@ export default class Acl {
 
   /**
    * Convenience method for removing all rules and policies for a subject
-   *
-   * @param {Object|Function|String} subject
-   * @returns {Acl}
    */
-  removeAll(subject) {
+  removeAll(subject: Subject) {
     this.removeRules(subject)
     this.removePolicy(subject)
     return this
   }
 }
+
+export default Acl

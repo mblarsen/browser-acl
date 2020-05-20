@@ -9,12 +9,16 @@
     "acl",
     "permissions"
   ],
-  "main": "dist/browser-acl.common.js",
-  "module": "dist/browser-acl.esm.js",
-  "browser": "dist/browser-acl.umd.js",
-  "unpkg": "dist/browser-acl.umd.js",
+  "source": "index.ts",
+  "main": "dist/index.js",
+  "umd:main": "dist/index.umd.js",
+  "module": "dist/index.module.js",
+  "types": "index.d.ts",
   "files": [
     "dist",
+    "types",
+    "index.ts",
+    "index.d.ts",
     "runkit.js"
   ],
   "repository": {
@@ -23,27 +27,25 @@
   },
   "bugs": "https://github.com/mblarsen/browser-acl/issues",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watchAll",
-    "build": "rollup -c",
-    "build:watch": "rollup -c -w",
+    "prebuild": "rm -rf ./dist",
+    "build": "microbundle build --tsconfig ./tsconfig.json --name BrowserAcl",
+    "postbuild": "mv dist/index.d.ts ./",
+    "test": "jest --config jest.config.json",
+    "test:watch": "jest --config jest.config.json --watchAll",
     "preversion": "npm run test",
-    "version": "npm run build && git add -A dist && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "postversion": "git push && git push --tags",
-    "build:docs": "documentation build index.js -f md -o dist/docs.md"
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.0",
-    "babel-jest": "^25.2.6",
-    "conventional-changelog-cli": "^2.0.31",
-    "documentation": "^12.1.4",
-    "jest": "^25.2.7",
-    "rollup": "^1.27.9",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-commonjs": "^10.0.2",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^5.3.0"
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/types": "^7.9.6",
+    "@types/jest": "^25.2.3",
+    "babel-jest": "^26.0.1",
+    "jest": "^26.0.1",
+    "microbundle": "^0.12.0",
+    "ts-jest": "^26.0.0",
+    "typescript": "^3.9.3"
   },
   "prettier": {
     "semi": false,
@@ -51,5 +53,5 @@
     "trailingComma": "all"
   },
   "runkitExampleFilename": "runkit.js",
-  "thanks": "https://flattr.com/@mblarsen"
+  "thanks": "https://github.com/mblarsen/browser-acl?sponsor=1"
 }
