@@ -13,10 +13,11 @@
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",
   "module": "dist/index.module.js",
-  "types": "dist/index.d.ts",
+  "types": "index.d.ts",
   "files": [
     "dist",
     "types",
+    "index.d.ts",
     "runkit.js"
   ],
   "repository": {
@@ -27,7 +28,7 @@
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "build": "microbundle build --tsconfig ./tsconfig.json --name BrowserAcl",
-    "postbuild": "sed -i 's/.\\/types/..\\/types/' dist/index.d.ts",
+    "postbuild": "mv dist/index.d.ts ./",
     "test": "jest --config jest.config.json",
     "test:watch": "jest --config jest.config.json --watchAll",
     "preversion": "npm run test",

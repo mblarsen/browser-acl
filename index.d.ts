@@ -1,4 +1,4 @@
-import { Verb, Subject, SubjectName, SubjectOrTest, Test, Options, Policy } from '../types';
+import { Verb, Subject, SubjectName, SubjectOrTest, Test, Options, Policy } from './types';
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  */
