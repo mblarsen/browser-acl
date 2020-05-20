@@ -6,7 +6,7 @@ import {
   Test,
   Options,
   Policy,
-} from './types/browser-acl'
+} from './types'
 
 export const GlobalRule = 'GLOBAL_RULE'
 

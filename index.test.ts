@@ -1,5 +1,5 @@
 import Acl from './index'
-import { Policy } from './types/browser-acl'
+import { Policy } from './types'
 
 interface MixinUser {
   can?: Function
