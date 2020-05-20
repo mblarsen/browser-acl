@@ -2,7 +2,6 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
-    "lib": ["ES2015"],
     "module": "commonjs",
     "outDir": "./dist",
     "sourceMap": true,
