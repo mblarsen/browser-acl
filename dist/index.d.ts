@@ -1,4 +1,4 @@
-import { Verb, Subject, SubjectName, SubjectOrTest, Test, Options, Policy } from './types/browser-acl';
+import { Verb, Subject, SubjectName, SubjectOrTest, Test, Options, Policy } from './types';
 export declare const GlobalRule = "GLOBAL_RULE";
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.

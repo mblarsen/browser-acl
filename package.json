@@ -12,6 +12,7 @@
   "main": "dist/index.js",
   "files": [
     "dist",
+    "types",
     "runkit.js"
   ],
   "repository": {
@@ -20,6 +21,9 @@
   },
   "bugs": "https://github.com/mblarsen/browser-acl/issues",
   "scripts": {
+    "prebuild": "rm -rf ./dist",
+    "build": "tsc",
+    "postbuild": "cp -r ./types ./dist",
     "test": "jest --config jest.config.json",
     "test:watch": "jest --config jest.config.json --watchAll",
     "preversion": "npm run test",
@@ -29,6 +33,7 @@
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
+    "@babel/types": "^7.9.6",
     "@types/jest": "^25.2.3",
     "babel-jest": "^26.0.1",
     "jest": "^26.0.1",

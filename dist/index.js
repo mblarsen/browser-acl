@@ -1,20 +1,30 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlobalRule = void 0;
 exports.GlobalRule = 'GLOBAL_RULE';
-const assumeGlobal = (sub) => typeof sub === 'boolean' ||
-    typeof sub === 'undefined' ||
-    (typeof sub === 'function' && sub.name === '');
+var assumeGlobal = function (sub) {
+    return typeof sub === 'boolean' ||
+        typeof sub === 'undefined' ||
+        (typeof sub === 'function' && sub.name === '');
+};
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  */
-class Acl {
+var Acl = /** @class */ (function () {
     /**
      * browser-acl
      *
      * @access public
      */
-    constructor({ strict = false } = {}) {
+    function Acl(_a) {
+        var _b = (_a === void 0 ? {} : _a).strict, strict = _b === void 0 ? false : _b;
         this.strict = strict;
         this.rules = new Map();
         this.policies = new Map();
@@ -40,8 +50,10 @@ class Acl {
      *
      * @access public
      */
-    rule(verbs, subject, test = true) {
-        let subject_;
+    Acl.prototype.rule = function (verbs, subject, test) {
+        var _this = this;
+        if (test === void 0) { test = true; }
+        var subject_;
         if (assumeGlobal(subject)) {
             test = typeof subject === 'undefined' ? true : subject;
             subject_ = exports.GlobalRule;
@@ -49,15 +61,15 @@ class Acl {
         else {
             subject_ = subject;
         }
-        const subjectName = this.subjectMapper(subject_);
-        const verbs_ = Array.isArray(verbs) ? verbs : [verbs];
-        verbs_.forEach((verb) => {
-            const rules = this.rules.get(subjectName) || {};
+        var subjectName = this.subjectMapper(subject_);
+        var verbs_ = Array.isArray(verbs) ? verbs : [verbs];
+        verbs_.forEach(function (verb) {
+            var rules = _this.rules.get(subjectName) || {};
             rules[verb] = test;
-            this.rules.set(subjectName, rules);
+            _this.rules.set(subjectName, rules);
         });
         return this;
-    }
+    };
     /**
      * You can group related rules into policies for a subject. The policies
      * properties are verbs and they can plain values or functions.
@@ -87,12 +99,12 @@ class Acl {
      *
      * @access public
      */
-    policy(policy, subject) {
-        const policy_ = typeof policy === 'function' ? new policy() : policy;
-        const subjectName = this.subjectMapper(subject);
+    Acl.prototype.policy = function (policy, subject) {
+        var policy_ = typeof policy === 'function' ? new policy() : policy;
+        var subjectName = this.subjectMapper(subject);
         this.policies.set(subjectName, policy_);
         return this;
-    }
+    };
     /**
      * Explicitly map a class or constructor function to a name.
      *
@@ -105,10 +117,10 @@ class Acl {
      *
      * @access public
      */
-    register(klass, subjectName) {
+    Acl.prototype.register = function (klass, subjectName) {
         this.registry.set(klass, subjectName);
         return this;
-    }
+    };
     /**
      * Performs a test if a user can perform action on subject.
      *
@@ -136,31 +148,36 @@ class Acl {
      *
      * @access public
      */
-    can(user, verb, subject = undefined, ...args) {
+    Acl.prototype.can = function (user, verb, subject) {
+        if (subject === void 0) { subject = undefined; }
+        var args = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            args[_i - 3] = arguments[_i];
+        }
         subject = typeof subject === 'undefined' ? exports.GlobalRule : subject;
-        const subjectName = this.subjectMapper(subject);
-        const policy = this.policies.get(subjectName);
-        const rules = policy || this.rules.get(subjectName);
+        var subjectName = this.subjectMapper(subject);
+        var policy = this.policies.get(subjectName);
+        var rules = policy || this.rules.get(subjectName);
         if (typeof rules === 'undefined') {
             if (this.strict) {
-                throw new Error(`No rules for subject "${subjectName}"`);
+                throw new Error("No rules for subject \"" + subjectName + "\"");
             }
             return false;
         }
         if (policy && typeof policy.beforeAll === 'function') {
-            const result = policy.beforeAll(verb, user, subject, subjectName, ...args);
+            var result = policy.beforeAll.apply(policy, __spreadArrays([verb, user, subject, subjectName], args));
             if (typeof result !== 'undefined') {
                 return result;
             }
         }
         if (typeof rules[verb] === 'function') {
-            return Boolean(rules[verb](user, subject, subjectName, ...args));
+            return Boolean(rules[verb].apply(rules, __spreadArrays([user, subject, subjectName], args)));
         }
         if (this.strict && typeof rules[verb] === 'undefined') {
-            throw new Error(`Unknown verb "${verb}"`);
+            throw new Error("Unknown verb \"" + verb + "\"");
         }
         return Boolean(rules[verb]);
-    }
+    };
     /**
      * Like can but subject is an array where only some has to be
      * true for the rule to match.
@@ -169,9 +186,14 @@ class Acl {
      *
      * @access public
      */
-    some(user, verb, subjects, ...args) {
-        return subjects.some((s) => this.can(user, verb, s, ...args));
-    }
+    Acl.prototype.some = function (user, verb, subjects) {
+        var _this = this;
+        var args = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            args[_i - 3] = arguments[_i];
+        }
+        return subjects.some(function (s) { return _this.can.apply(_this, __spreadArrays([user, verb, s], args)); });
+    };
     /**
      * Like can but subject is an array where all has to be
      * true for the rule to match.
@@ -180,9 +202,14 @@ class Acl {
      *
      * @access public
      */
-    every(user, verb, subjects, ...args) {
-        return subjects.every((s) => this.can(user, verb, s, ...args));
-    }
+    Acl.prototype.every = function (user, verb, subjects) {
+        var _this = this;
+        var args = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            args[_i - 3] = arguments[_i];
+        }
+        return subjects.every(function (s) { return _this.can.apply(_this, __spreadArrays([user, verb, s], args)); });
+    };
     /**
      * Mix in augments your user class with a `can` function object. This
      * is optional and you can always call `can` directly on your
@@ -196,19 +223,31 @@ class Acl {
      *
      * @access public
      */
-    mixin(User) {
-        const acl = this;
-        User.prototype.can = function (verb, subject, ...args) {
-            return acl.can(this, verb, subject, ...args);
+    Acl.prototype.mixin = function (User) {
+        var acl = this;
+        User.prototype.can = function (verb, subject) {
+            var args = [];
+            for (var _i = 2; _i < arguments.length; _i++) {
+                args[_i - 2] = arguments[_i];
+            }
+            return acl.can.apply(acl, __spreadArrays([this, verb, subject], args));
         };
-        User.prototype.can.every = function (verb, subjects, ...args) {
-            return acl.every(this, verb, subjects, ...args);
+        User.prototype.can.every = function (verb, subjects) {
+            var args = [];
+            for (var _i = 2; _i < arguments.length; _i++) {
+                args[_i - 2] = arguments[_i];
+            }
+            return acl.every.apply(acl, __spreadArrays([this, verb, subjects], args));
         };
-        User.prototype.can.some = function (verb, subjects, ...args) {
-            return acl.some(this, verb, subjects, ...args);
+        User.prototype.can.some = function (verb, subjects) {
+            var args = [];
+            for (var _i = 2; _i < arguments.length; _i++) {
+                args[_i - 2] = arguments[_i];
+            }
+            return acl.some.apply(acl, __spreadArrays([this, verb, subjects], args));
         };
         return this;
-    }
+    };
     /**
      * Rules are grouped by subjects and this default mapper tries to
      * map any non falsy input to a subject name.
@@ -245,38 +284,41 @@ class Acl {
      *
      * @access public
      */
-    subjectMapper(subject) {
+    Acl.prototype.subjectMapper = function (subject) {
         if (typeof subject === 'string') {
             return subject;
         }
-        const isFun = typeof subject === 'function';
-        if (isFun && this.registry.has(subject)) {
+        if (this.registry.has(subject)) {
             return this.registry.get(subject);
         }
-        if (!isFun && this.registry.has(subject.constructor)) {
+        if (this.registry.has(subject.constructor)) {
             return this.registry.get(subject.constructor);
         }
-        return isFun ? subject.name : subject.constructor.name;
-    }
+        if (typeof subject === 'function') {
+            return subject.name;
+        }
+        return subject.constructor.name;
+    };
     /**
      * Removes all rules, policies, and registrations
      */
-    reset() {
+    Acl.prototype.reset = function () {
         this.rules = new Map();
         this.policies = new Map();
         this.registry = new WeakMap();
         return this;
-    }
+    };
     /**
      * Remove rules for subject
      *
      * Optionally limit to a single verb.
      */
-    removeRules(subject, verb = null) {
-        const subjectName = this.subjectMapper(subject);
+    Acl.prototype.removeRules = function (subject, verb) {
+        if (verb === void 0) { verb = null; }
+        var subjectName = this.subjectMapper(subject);
         if (this.rules.has(subjectName)) {
             if (verb) {
-                const rules = this.rules.get(subjectName);
+                var rules = this.rules.get(subjectName);
                 if (rules) {
                     delete rules[verb];
                 }
@@ -285,23 +327,23 @@ class Acl {
             this.rules.delete(subjectName);
         }
         return this;
-    }
+    };
     /**
      * Remove policy for subject
      */
-    removePolicy(subject) {
-        const subjectName = this.subjectMapper(subject);
+    Acl.prototype.removePolicy = function (subject) {
+        var subjectName = this.subjectMapper(subject);
         this.policies.delete(subjectName);
         return this;
-    }
+    };
     /**
      * Convenience method for removing all rules and policies for a subject
      */
-    removeAll(subject) {
+    Acl.prototype.removeAll = function (subject) {
         this.removeRules(subject);
         this.removePolicy(subject);
         return this;
-    }
-}
+    };
+    return Acl;
+}());
 exports.default = Acl;
-//# sourceMappingURL=index.js.map
