@@ -3,6 +3,8 @@
 ## 0.8.0
 
 - refactor: rewrite in TypeScript
+- breaking: GlobalRule is available through Acl.GlobalRule. Before it was
+  exported separately.
 
 ## [0.7.5](https://github.com/mblarsen/browser-acl/compare/v0.7.4...v0.7.5) (2019-11-01)
 
