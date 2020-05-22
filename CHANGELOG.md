@@ -1,10 +1,13 @@
 ## next
 
+- build: move types into index.ts to avoid special handling afterwards
+
 ## 0.8.0
 
 - refactor: rewrite in TypeScript
 - breaking: GlobalRule is available through Acl.GlobalRule. Before it was
-  exported separately.
+  exported separately. This only affects you if you explicitly use `GlobalRule`.
+  If you've been using non-strict mode (default) you'll have had no need for that.
 
 ## [0.7.5](https://github.com/mblarsen/browser-acl/compare/v0.7.4...v0.7.5) (2019-11-01)
 

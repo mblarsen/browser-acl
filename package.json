@@ -13,14 +13,7 @@
   "main": "dist/index.js",
   "umd:main": "dist/index.umd.js",
   "module": "dist/index.module.js",
-  "types": "index.d.ts",
-  "files": [
-    "dist",
-    "types",
-    "index.ts",
-    "index.d.ts",
-    "runkit.js"
-  ],
+  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/mblarsen/browser-acl"
@@ -29,7 +22,6 @@
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "build": "microbundle build --tsconfig ./tsconfig.json --name BrowserAcl",
-    "postbuild": "mv dist/index.d.ts ./",
     "test": "jest --config jest.config.json",
     "test:watch": "jest --config jest.config.json --watchAll",
     "preversion": "npm run test",

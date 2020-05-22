@@ -1,4 +1,16 @@
-import { Verb, Subject, SubjectName, SubjectOrTest, Test, Options, Policy } from './types';
+export interface Options {
+    strict?: boolean;
+}
+export interface Policy {
+    beforeAll?: Function;
+    [key: string]: any;
+}
+export declare type Verb = string;
+export declare type Subject = string | Function | object;
+export declare type SubjectName = string | undefined;
+export declare type SubjectOrTest = Subject | boolean;
+export declare type TestFunction = (user?: any, ...args: any[]) => boolean;
+export declare type Test = boolean | TestFunction;
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  */

@@ -1,12 +1,23 @@
-import {
-  Verb,
-  Subject,
-  SubjectName,
-  SubjectOrTest,
-  Test,
-  Options,
-  Policy,
-} from './types'
+export interface Options {
+  strict?: boolean
+}
+
+export interface Policy {
+  beforeAll?: Function
+  [key: string]: any
+}
+
+export type Verb = string
+
+export type Subject = string | Function | object
+
+export type SubjectName = string | undefined
+
+export type SubjectOrTest = Subject | boolean
+
+export type TestFunction = (user?: any, ...args: any[]) => boolean
+
+export type Test = boolean | TestFunction
 
 const assumeGlobal = (sub: any): boolean =>
   typeof sub === 'boolean' ||
