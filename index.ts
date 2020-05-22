@@ -1,28 +1,46 @@
 export interface Options {
+  /** Disable all 'smarts' and require you to be explicit. */
   strict?: boolean
 }
 
+/**
+ * Something that possibly has a beforeAll and otherwise
+ * just a string-access.
+ */
 export interface Policy {
   beforeAll?: Function
   [key: string]: any
 }
 
+/**
+ * Verbs or action: view, edit, delete, restore, etc.
+ */
 export type Verb = string
 
-export type Subject = string | Function | object
+/**
+ * The object of the verb. E.g. in the sentence: 'user edits post' here
+ * 'post' is the verb object.
+ */
+export type VerbObject = string | Function | object
 
-export type SubjectName = string | undefined
-
-export type SubjectOrTest = Subject | boolean
-
+/**
+ * A callback with determines of a user can perform an action
+ */
 export type TestFunction = (user?: any, ...args: any[]) => boolean
 
+/**
+ * The test for allowing the user to perform action
+ */
 export type Test = boolean | TestFunction
 
-const assumeGlobal = (sub: any): boolean =>
-  typeof sub === 'boolean' ||
-  typeof sub === 'undefined' ||
-  (typeof sub === 'function' && sub.name === '')
+type VerbObjectName = string | undefined
+
+type VerbObjectOrTest = VerbObject | boolean
+
+const assumeGlobal = (obj: any): boolean =>
+  typeof obj === 'boolean' ||
+  typeof obj === 'undefined' ||
+  (typeof obj === 'function' && obj.name === '')
 
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
@@ -31,8 +49,8 @@ class Acl {
   static GlobalRule = 'GLOBAL_RULE'
 
   strict: boolean
-  rules: Map<SubjectName, { [key: string]: Test }>
-  policies: Map<SubjectName | undefined, Policy>
+  rules: Map<VerbObjectName, { [key: string]: Test }>
+  policies: Map<VerbObjectName | undefined, Policy>
   registry: WeakMap<Object, string>
 
   /**
@@ -48,11 +66,11 @@ class Acl {
   }
 
   /**
-   * You add rules by providing a verb, a subject and an optional
+   * You add rules by providing a verb, a verb object and an optional
    * test (that otherwise defaults to true).
    *
    * If the test is a function it will be evaluated with the params:
-   * user, subject, and subjectName. The test value is ultimately evaluated
+   * user, verbObject, and verbObjectName. The test value is ultimately evaluated
    * for truthiness.
    *
    * Examples:
@@ -67,26 +85,26 @@ class Acl {
    *
    * @access public
    */
-  rule(verbs: Verb | Verb[], subject: SubjectOrTest, test: Test = true) {
-    let subject_: Subject
-    if (assumeGlobal(subject)) {
-      test = typeof subject === 'undefined' ? true : (subject as Test)
-      subject_ = Acl.GlobalRule
+  rule(verbs: Verb | Verb[], verbObject: VerbObjectOrTest, test: Test = true) {
+    let verbObject_: VerbObject
+    if (assumeGlobal(verbObject)) {
+      test = typeof verbObject === 'undefined' ? true : (verbObject as Test)
+      verbObject_ = Acl.GlobalRule
     } else {
-      subject_ = subject as Subject
+      verbObject_ = verbObject as VerbObject
     }
-    const subjectName = this.subjectMapper(subject_)
+    const verbObjectName = this.verbObjectMapper(verbObject_)
     const verbs_ = Array.isArray(verbs) ? verbs : [verbs]
     verbs_.forEach((verb) => {
-      const rules = this.rules.get(subjectName) || {}
+      const rules = this.rules.get(verbObjectName) || {}
       rules[verb] = test
-      this.rules.set(subjectName, rules)
+      this.rules.set(verbObjectName, rules)
     })
     return this
   }
 
   /**
-   * You can group related rules into policies for a subject. The policies
+   * You can group related rules into policies for a verb object. The policies
    * properties are verbs and they can plain values or functions.
    *
    * If the policy is a function it will be new'ed up before use.
@@ -114,11 +132,11 @@ class Acl {
    *
    * @access public
    */
-  policy(policy: Policy, subject: Subject) {
+  policy(policy: Policy, verbObject: VerbObject) {
     const policy_ =
       typeof policy === 'function' ? new (policy as any)() : policy
-    const subjectName = this.subjectMapper(subject)
-    this.policies.set(subjectName, policy_)
+    const verbObjectName = this.verbObjectMapper(verbObject)
+    this.policies.set(verbObjectName, policy_)
     return this
   }
 
@@ -127,23 +145,23 @@ class Acl {
    *
    * You would want to do this in case your code is heavily
    * minified in which case the default mapper cannot use the
-   * simple "reflection" to resolve the subject name.
+   * simple "reflection" to resolve the verb object name.
    *
-   * Note: If you override the subjectMapper this is not used,
+   * Note: If you override the verbObjectMapper this is not used,
    * bud it can be used manually through `this.registry`.
    *
    * @access public
    */
-  register(klass: Function, subjectName: string) {
-    this.registry.set(klass, subjectName)
+  register(klass: Function, verbObjectName: string) {
+    this.registry.set(klass, verbObjectName)
     return this
   }
 
   /**
-   * Performs a test if a user can perform action on subject.
+   * Performs a test if a user can perform action on verb object.
    *
-   * The action is a verb and the subject can be anything the
-   * subjectMapper can map to a subject name.
+   * The action is a verb and the verb object can be anything the
+   * verbObjectMapper can map to a verb object name.
    *
    * E.g. if you can to test if a user can delete a post you would
    * pass the actual post. Where as if you are testing us a user
@@ -169,31 +187,37 @@ class Acl {
   can(
     user: Object,
     verb: Verb,
-    subject: Subject | undefined = undefined,
+    verbObject: VerbObject | undefined = undefined,
     ...args: any[]
   ) {
-    subject = typeof subject === 'undefined' ? Acl.GlobalRule : subject
-    const subjectName = this.subjectMapper(subject)
+    verbObject = typeof verbObject === 'undefined' ? Acl.GlobalRule : verbObject
+    const verbObjectName = this.verbObjectMapper(verbObject)
 
-    const policy = this.policies.get(subjectName)
-    const rules = policy || this.rules.get(subjectName)
+    const policy = this.policies.get(verbObjectName)
+    const rules = policy || this.rules.get(verbObjectName)
 
     if (typeof rules === 'undefined') {
       if (this.strict) {
-        throw new Error(`No rules for subject "${subjectName}"`)
+        throw new Error(`No rules for verb object "${verbObjectName}"`)
       }
       return false
     }
 
     if (policy && typeof policy.beforeAll === 'function') {
-      const result = policy.beforeAll(verb, user, subject, subjectName, ...args)
+      const result = policy.beforeAll(
+        verb,
+        user,
+        verbObject,
+        verbObjectName,
+        ...args,
+      )
       if (typeof result !== 'undefined') {
         return result
       }
     }
 
     if (typeof rules[verb] === 'function') {
-      return Boolean(rules[verb](user, subject, subjectName, ...args))
+      return Boolean(rules[verb](user, verbObject, verbObjectName, ...args))
     }
 
     if (this.strict && typeof rules[verb] === 'undefined') {
@@ -204,27 +228,27 @@ class Acl {
   }
 
   /**
-   * Like can but subject is an array where only some has to be
+   * Like can but verb object is an array where only some has to be
    * true for the rule to match.
    *
-   * Note the subjects do not need to be of the same kind.
+   * Note the verb objects do not need to be of the same kind.
    *
    * @access public
    */
-  some(user: object, verb: Verb, subjects: Subject[], ...args: any[]) {
-    return subjects.some((s) => this.can(user, verb, s, ...args))
+  some(user: object, verb: Verb, verbObjects: VerbObject[], ...args: any[]) {
+    return verbObjects.some((s) => this.can(user, verb, s, ...args))
   }
 
   /**
-   * Like can but subject is an array where all has to be
+   * Like can but verbObject is an array where all has to be
    * true for the rule to match.
    *
-   * Note the subjects do not need to be of the same kind.
+   * Note the verb objects do not need to be of the same kind.
    *
    * @access public
    */
-  every(user: Object, verb: Verb, subjects: Subject[], ...args: any[]) {
-    return subjects.every((s) => this.can(user, verb, s, ...args))
+  every(user: Object, verb: Verb, verbObjects: VerbObject[], ...args: any[]) {
+    return verbObjects.every((s) => this.can(user, verb, s, ...args))
   }
 
   /**
@@ -244,38 +268,38 @@ class Acl {
     const acl = this
     User.prototype.can = function (
       verb: Verb,
-      subject: Subject,
+      verbObject: VerbObject,
       ...args: any[]
     ) {
-      return acl.can(this, verb, subject, ...args)
+      return acl.can(this, verb, verbObject, ...args)
     }
     User.prototype.can.every = function (
       verb: Verb,
-      subjects: Subject[],
+      verbObjects: VerbObject[],
       ...args: any[]
     ) {
-      return acl.every(this, verb, subjects, ...args)
+      return acl.every(this, verb, verbObjects, ...args)
     }
     User.prototype.can.some = function (
       verb: Verb,
-      subjects: Subject[],
+      verbObjects: VerbObject[],
       ...args: any[]
     ) {
-      return acl.some(this, verb, subjects, ...args)
+      return acl.some(this, verb, verbObjects, ...args)
     }
     return this
   }
 
   /**
-   * Rules are grouped by subjects and this default mapper tries to
-   * map any non falsy input to a subject name.
+   * Rules are grouped by verb objects and this default mapper tries to
+   * map any non falsy input to a verb object name.
    *
    * This is important when you want to try a verb against a rule
    * passing in an instance of a class.
    *
-   * - strings becomes subjects
-   * - function's names are used for subject
-   * - object's constructor name is used for subject
+   * - strings becomes verb objects
+   * - function's names are used for verb object
+   * - object's constructor name is used for verb object
    *
    * Override this function if your models do not match this approach.
    *
@@ -283,7 +307,7 @@ class Acl {
    * to indicate the type of the object.
    *
    * ```javascript
-   *   acl.subjectMapper = s => typeof s === 'string' ? s : s.type
+   *   acl.verbObjectMapper = s => typeof s === 'string' ? s : s.type
    * ```
    *
    * `can` will now use this function when you pass in your objects.
@@ -298,24 +322,24 @@ class Acl {
    * user can edit the book if they are the author.
    *
    * See {@link #register register()} for how to manually map
-   * classes to subject name.
+   * classes to verb object name.
    *
    * @access public
    */
-  subjectMapper(subject: Subject): SubjectName {
-    if (typeof subject === 'string') {
-      return subject
+  verbObjectMapper(verbObject: VerbObject): VerbObjectName {
+    if (typeof verbObject === 'string') {
+      return verbObject
     }
-    if (this.registry.has(subject)) {
-      return this.registry.get(subject)
+    if (this.registry.has(verbObject)) {
+      return this.registry.get(verbObject)
     }
-    if (this.registry.has(subject.constructor)) {
-      return this.registry.get(subject.constructor)
+    if (this.registry.has(verbObject.constructor)) {
+      return this.registry.get(verbObject.constructor)
     }
-    if (typeof subject === 'function') {
-      return subject.name
+    if (typeof verbObject === 'function') {
+      return verbObject.name
     }
-    return subject.constructor.name
+    return verbObject.constructor.name
   }
 
   /**
@@ -329,40 +353,40 @@ class Acl {
   }
 
   /**
-   * Remove rules for subject
+   * Remove rules for verb object
    *
    * Optionally limit to a single verb.
    */
-  removeRules(subject: Subject, verb: Verb | null = null) {
-    const subjectName = this.subjectMapper(subject)
-    if (this.rules.has(subjectName)) {
+  removeRules(verbObject: VerbObject, verb: Verb | null = null) {
+    const verbObjectName = this.verbObjectMapper(verbObject)
+    if (this.rules.has(verbObjectName)) {
       if (verb) {
-        const rules = this.rules.get(subjectName)
+        const rules = this.rules.get(verbObjectName)
         if (rules) {
           delete rules[verb]
         }
         return this
       }
-      this.rules.delete(subjectName)
+      this.rules.delete(verbObjectName)
     }
     return this
   }
 
   /**
-   * Remove policy for subject
+   * Remove policy for verb object
    */
-  removePolicy(subject: Subject) {
-    const subjectName = this.subjectMapper(subject)
-    this.policies.delete(subjectName)
+  removePolicy(verbObject: VerbObject) {
+    const verbObjectName = this.verbObjectMapper(verbObject)
+    this.policies.delete(verbObjectName)
     return this
   }
 
   /**
-   * Convenience method for removing all rules and policies for a subject
+   * Convenience method for removing all rules and policies for a verb object
    */
-  removeAll(subject: Subject) {
-    this.removeRules(subject)
-    this.removePolicy(subject)
+  removeAll(verbObject: VerbObject) {
+    this.removeRules(verbObject)
+    this.removePolicy(verbObject)
     return this
   }
 }

@@ -1,5 +1,5 @@
 import Acl from './index'
-import { Policy } from './types'
+import { Policy } from './index'
 
 interface MixinUser {
   can?: Function
@@ -166,12 +166,12 @@ describe('Strict mode', () => {
     )
   })
 
-  test('Throws on unknown subject', () => {
+  test('Throws on unknown verb object', () => {
     const acl = new Acl({ strict: true })
     acl.mixin(User)
     const user = new User()
     expect(user.can.bind(user, 'eat', new Apple())).toThrow(
-      'No rules for subject "Apple"',
+      'No rules for verb object "Apple"',
     )
   })
 })
@@ -192,9 +192,9 @@ describe('Registry and mapper', () => {
     const item = { type: 'Item' }
     acl.rule('lock', 'Item')
     expect(acl.can.bind(acl, {}, 'lock', item)).toThrow(
-      'No rules for subject "Object"',
+      'No rules for verb object "Object"',
     )
-    acl.subjectMapper = (s: string | { [key: string]: any }) =>
+    acl.verbObjectMapper = (s: string | { [key: string]: any }) =>
       typeof s === 'string' ? s : s.type
     expect(acl.can({}, 'lock', item)).toBe(true)
   })
@@ -218,10 +218,10 @@ describe('Reset and remove', () => {
     acl.reset()
     expect(acl.registry.has(Job)).toBe(false)
     expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
-      'No rules for subject "Job"',
+      'No rules for verb object "Job"',
     )
     expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
-      'No rules for subject "Apple"',
+      'No rules for verb object "Apple"',
     )
   })
 
@@ -235,10 +235,10 @@ describe('Reset and remove', () => {
     expect(acl.can({}, 'discard', apple)).toBe(true)
     acl.removeRules(apple)
     expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
-      'No rules for subject "Apple"',
+      'No rules for verb object "Apple"',
     )
     expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow(
-      'No rules for subject "Apple"',
+      'No rules for verb object "Apple"',
     )
   })
 
@@ -272,7 +272,7 @@ describe('Reset and remove', () => {
     acl.removePolicy(job)
     expect(acl.registry.has(Job)).toBe(true)
     expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
-      'No rules for subject "Job"',
+      'No rules for verb object "Job"',
     )
   })
 
@@ -294,10 +294,10 @@ describe('Reset and remove', () => {
     acl.removeAll(apple)
     expect(acl.registry.has(Job)).toBe(true)
     expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
-      'No rules for subject "Job"',
+      'No rules for verb object "Job"',
     )
     expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
-      'No rules for subject "Apple"',
+      'No rules for verb object "Apple"',
     )
   })
 })
@@ -338,9 +338,9 @@ describe('More complex cases', () => {
       )
     })
 
-    acl.rule(['view'], Job, (user, subject) => {
+    acl.rule(['view'], Job, (user, verbObject) => {
       return (
-        subject.users.find((rel: any) => rel.user === user) ||
+        verbObject.users.find((rel: any) => rel.user === user) ||
         data.company.users.find(
           (rel) => rel.user === user && rel.role === 'owner',
         )
@@ -382,9 +382,9 @@ describe('More complex cases', () => {
           (rel) => rel.user === user && rel.role === 'owner',
         )
       },
-      view: function (user: any, subject: any) {
+      view: function (user: any, verbObject: any) {
         return (
-          subject.users.find((rel: any) => rel.user === user) ||
+          verbObject.users.find((rel: any) => rel.user === user) ||
           data.company.users.find(
             (rel) => rel.user === user && rel.role === 'owner',
           )
