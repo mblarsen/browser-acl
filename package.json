@@ -1,7 +1,7 @@
 {
   "name": "browser-acl",
   "description": "Simple ACL library for the browser inspired by Laravel's guards and policies.",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "author": "Michael Bøcker-Larsen <m19n@pm.me>",
   "license": "MIT",
   "keywords": [
@@ -25,7 +25,7 @@
     "test": "jest --config jest.config.json",
     "test:watch": "jest --config jest.config.json --watchAll",
     "preversion": "npm run test",
-    "version": "npm run build && git add -A ./dist ./index.d.ts",
+    "version": "npm run build && git add -A ./dist",
     "postversion": "git push && git push --tags"
   },
   "devDependencies": {
