@@ -1,34 +1,4 @@
-/**
- * Disable all 'smarts' and require you to be explicit.
- */
-export interface Options {
-    strict?: boolean;
-}
-/**
- * Something that possibly has a beforeAll and otherwise
- * just a string-access.
- */
-export interface Policy {
-    beforeAll?: Function;
-    [key: string]: any;
-}
-/**
- * Verbs or action: view, edit, delete, restore, etc.
- */
-export declare type Verb = string;
-/**
- * The object of the verb. E.g. in the sentence: 'user edits post' here
- * 'post' is the verb object.
- */
-export declare type VerbObject = string | Function | object;
-/**
- * A callback with determines of a user can perform an action
- */
-export declare type TestFunction = (user?: any, ...args: any[]) => boolean;
-/**
- * The test for allowing the user to perform action
- */
-export declare type Test = boolean | TestFunction;
+import { Verb, VerbObject, Test, Policy, Options } from '../types';
 declare type VerbObjectName = string | undefined;
 declare type VerbObjectOrTest = VerbObject | boolean;
 /**
