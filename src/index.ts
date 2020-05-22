@@ -46,6 +46,13 @@ const assumeGlobal = (obj: any): boolean =>
 
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
+ *
+ * Examples:
+ *
+ * ```javascript
+ * acl.rule('create', Post)
+ * acl.rule('edit', Post, (user, post) => post.userId === user.id)
+ * ```
  */
 class Acl {
   static GlobalRule = 'GLOBAL_RULE'

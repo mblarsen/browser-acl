@@ -33,6 +33,13 @@ declare type VerbObjectName = string | undefined;
 declare type VerbObjectOrTest = VerbObject | boolean;
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
+ *
+ * Examples:
+ *
+ * ```javascript
+ * acl.rule('create', Post)
+ * acl.rule('edit', Post, (user, post) => post.userId === user.id)
+ * ```
  */
 declare class Acl {
     static GlobalRule: string;
