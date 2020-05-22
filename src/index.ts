@@ -1,5 +1,7 @@
+/**
+ * Disable all 'smarts' and require you to be explicit.
+ */
 export interface Options {
-  /** Disable all 'smarts' and require you to be explicit. */
   strict?: boolean
 }
 

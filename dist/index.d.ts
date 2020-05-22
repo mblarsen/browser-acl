@@ -1,5 +1,7 @@
+/**
+ * Disable all 'smarts' and require you to be explicit.
+ */
 export interface Options {
-    /** Disable all 'smarts' and require you to be explicit. */
     strict?: boolean;
 }
 /**
@@ -15,13 +17,20 @@ export interface Policy {
  */
 export declare type Verb = string;
 /**
- *
+ * The object of the verb. E.g. in the sentence: 'user edits post' here
+ * 'post' is the verb object.
  */
 export declare type VerbObject = string | Function | object;
-export declare type VerbObjectName = string | undefined;
-export declare type VerbObjectOrTest = VerbObject | boolean;
+/**
+ * A callback with determines of a user can perform an action
+ */
 export declare type TestFunction = (user?: any, ...args: any[]) => boolean;
+/**
+ * The test for allowing the user to perform action
+ */
 export declare type Test = boolean | TestFunction;
+declare type VerbObjectName = string | undefined;
+declare type VerbObjectOrTest = VerbObject | boolean;
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  */
