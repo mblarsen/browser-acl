@@ -11,6 +11,8 @@
 
 Go to [vue-browser-acl](https://github.com/mblarsen/vue-browser-acl) for the official Vue package.
 
+![example](example.png)
+
 ## Install
 
 ```
