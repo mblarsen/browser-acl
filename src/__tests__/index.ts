@@ -1,5 +1,5 @@
 import Acl from '../index'
-import { Policy } from '../index'
+import { Policy } from '../../types/index.d'
 
 interface MixinUser {
   can?: Function
