@@ -13,6 +13,8 @@ Go to [vue-browser-acl](https://github.com/mblarsen/vue-browser-acl) for the off
 
 ![example](example.png)
 
+[![Contact me on Codementor](https://www.codementor.io/m-badges/mblarsen/im-a-cm-g.svg)](https://www.codementor.io/@mblarsen?refer=badge)
+
 ## Install
 
 ```
