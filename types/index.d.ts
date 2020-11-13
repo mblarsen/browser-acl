@@ -28,10 +28,9 @@ export type VerbObject = string | Function | object
 /**
  * A callback with determines of a user can perform an action
  */
-export type TestFunction = (user?: any, ...args: any[]) => boolean
+export type TestFunction = (user?: any, ...args: any[]) => any | Promise<any>
 
 /**
  * The test for allowing the user to perform action
  */
 export type Test = boolean | TestFunction
-

@@ -21,79 +21,81 @@ class Job {
 }
 
 describe('The basics', () => {
-  test('Acl mixin', () => {
+  test('Acl mixin', async () => {
     const acl = new Acl()
     acl.mixin(User)
     const user: MixinUser = new User()
-    expect(user.can).toBeDefined()
+    expect(await user.can).toBeDefined()
   })
 
-  test('Global rules', () => {
+  test('Global rules', async () => {
     const acl = new Acl()
     acl.rule('purgeInactive', (user: User) => user.isAdmin)
-    expect(acl.can({ isAdmin: true } as User, 'purgeInactive')).toBe(true)
-    expect(acl.can({ isAdmin: false }, 'purgeInactive')).toBe(false)
+    expect(
+      await acl.can({ isAdmin: true } as User, 'purgeInactive'),
+    ).toBeTruthy()
+    expect(await acl.can({ isAdmin: false }, 'purgeInactive')).toBeFalsy()
     acl.rule('contact', true)
-    expect(acl.can({}, 'contact')).toBe(true)
+    expect(await acl.can({}, 'contact')).toBeTruthy()
     acl.rule('linger', false)
-    expect(acl.can({}, 'linger')).toBe(false)
+    expect(await acl.can({}, 'linger')).toBeFalsy()
     acl.rule('pillage', false)
-    expect(acl.can({}, 'pillage')).toBe(false)
+    expect(await acl.can({}, 'pillage')).toBeFalsy()
   })
 
-  test('Cannot eat apples (no rule)', () => {
+  test('Cannot eat apples (no rule)', async () => {
     const acl = new Acl()
     acl.mixin(User)
     const user = new User()
-    expect(user.can('eat', 'Apple')).toBe(false)
+    expect(await user.can('eat', 'Apple')).toBeFalsy()
   })
 
-  test('Cannot eat apples (!test)', () => {
+  test('Cannot eat apples (!test)', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule(['eat'], 'Apple', false)
     const user = new User()
-    expect(user.can('eat', 'Apple')).toBe(false)
+    expect(await user.can('eat', 'Apple')).toBeFalsy()
   })
 
-  test('Can eat apples (string)', () => {
+  test('Can eat apples (string)', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule(['eat'], 'Apple')
     const user = new User()
-    expect(user.can('eat', 'Apple')).toBe(true)
+    expect(await user.can('eat', 'Apple')).toBeTruthy()
   })
 
-  test('Can eat apples (Class)', () => {
+  test('Can eat apples (Class)', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule(['eat'], Apple)
     const user = new User()
-    expect(user.can('eat', Apple)).toBe(true)
+    expect(await user.can('eat', Apple)).toBeTruthy()
   })
 
-  test('Can eat apples (Object)', () => {
+  test('Can eat apples (Object)', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule(['eat'], Apple)
     const user = new User()
-    expect(user.can('eat', new Apple())).toBe(true)
+    expect(await user.can('eat', new Apple())).toBeTruthy()
   })
 
-  test('Can eat apples (params)', () => {
+  test('Can eat apples (params)', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule(['eat'], Apple, function (_0, _1, _2, param: string) {
-      expect(param).toBe('worm')
+      expect(param).toEqual('worm')
       return true
     })
     const user = new User()
-    expect(user.can('eat', new Apple(), 'worm')).toBe(true)
+    expect(await user.can('eat', new Apple(), 'worm')).toBeTruthy()
   })
 })
 
 describe('Multiple', () => {
-  test('Can eat some apples', () => {
+  test('Can eat some apples', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
@@ -101,23 +103,19 @@ describe('Multiple', () => {
     const fine = new Apple()
     const rotten = new Apple()
     rotten.rotten = true
-    expect(user.can('eat', fine)).toBe(true)
-    expect(user.can('eat', rotten)).toBe(false)
-    expect(acl.some(user, 'eat', [fine, rotten])).toBe(true)
-    expect(acl.some(user, 'eat', [rotten, rotten])).toBe(false)
+    expect(await acl.some(user, 'eat', [fine, rotten])).toBeTruthy()
+    expect(await acl.some(user, 'eat', [rotten, rotten])).toBe(false)
   })
 
-  test('Can eat some apples and jobs', () => {
+  test('Can eat some apples and jobs', async () => {
     const acl = new Acl()
     acl.rule('eat', Apple)
     acl.rule('eat', Job)
     const user = new User()
-    expect(acl.can(user, 'eat', new Apple())).toBe(true)
-    expect(acl.can(user, 'eat', new Job())).toBe(true)
-    expect(acl.some(user, 'eat', [new Apple(), new Job()])).toBe(true)
+    expect(await acl.some(user, 'eat', [new Apple(), new Job()])).toBeTruthy()
   })
 
-  test('Can eat every apple', () => {
+  test('Can eat every apple', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
@@ -125,13 +123,12 @@ describe('Multiple', () => {
     const fine = new Apple()
     const rotten = new Apple()
     rotten.rotten = true
-    expect(user.can('eat', fine)).toBe(true)
-    expect(user.can('eat', rotten)).toBe(false)
-    expect(acl.every(user, 'eat', [fine, rotten])).toBe(false)
-    expect(acl.every(user, 'eat', [fine, new Apple()])).toBe(true)
+    expect(await acl.every(user, 'eat', [fine, fine])).toBe(true)
+    expect(await acl.every(user, 'eat', [fine, rotten])).toBe(false)
+    expect(await acl.every(user, 'eat', [fine, new Apple()])).toBe(true)
   })
 
-  test('User can eat some apples', () => {
+  test('User can eat some apples', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
@@ -139,10 +136,10 @@ describe('Multiple', () => {
     const fine = new Apple()
     const rotten = new Apple()
     rotten.rotten = true
-    expect(user.can.some('eat', [fine, rotten])).toBe(true)
+    expect(await user.can.some('eat', [fine, rotten])).toBeTruthy()
   })
 
-  test('User can eat every apple', () => {
+  test('User can eat every apple', async () => {
     const acl = new Acl()
     acl.mixin(User)
     acl.rule('eat', Apple, (_, a) => !Boolean(a.rotten))
@@ -150,58 +147,116 @@ describe('Multiple', () => {
     const fine = new Apple()
     const rotten = new Apple()
     rotten.rotten = true
-    expect(user.can.every('eat', [fine, rotten])).toBe(false)
-    expect(user.can.every('eat', [fine, new Job()])).toBe(false)
+    expect(await user.can.every('eat', [fine, rotten])).toBe(false)
+    expect(await user.can.every('eat', [fine, new Job()])).toBe(false)
   })
 })
 
 describe('Strict mode', () => {
-  test('Throws on unknown verb', () => {
+  test('Throws on unknown verb', async () => {
     const acl = new Acl({ strict: true })
     acl.mixin(User)
     acl.rule('grow', Apple)
     const user = new User()
-    expect(user.can.bind(user, 'eat', new Apple())).toThrow(
+    expect(user.can.bind(user, 'eat', new Apple())).rejects.toThrow(
       'Unknown verb "eat"',
     )
   })
 
-  test('Throws on unknown verb object', () => {
+  test('Throws on unknown verb object', async () => {
     const acl = new Acl({ strict: true })
     acl.mixin(User)
     const user = new User()
-    expect(user.can.bind(user, 'eat', new Apple())).toThrow(
+    expect(user.can.bind(user, 'eat', new Apple())).rejects.toThrow(
       'No rules for verb object "Apple"',
     )
   })
 })
 
+describe('Multiple async', () => {
+  test('Can eat some async apples', async () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule('eat', Apple, (_, a) => Promise.resolve(!Boolean(a.rotten)))
+    const user = new User()
+    const fine = new Apple()
+    const rotten = new Apple()
+    rotten.rotten = true
+    expect(await acl.some(user, 'eat', [fine, rotten])).toBeTruthy()
+    expect(await acl.some(user, 'eat', [rotten, rotten])).toBe(false)
+  })
+
+  test('Can eat some async apples and async jobs', async () => {
+    const acl = new Acl()
+    acl.rule('eat', Apple)
+    acl.rule('eat', Job)
+    const user = new User()
+    expect(await acl.some(user, 'eat', [new Apple(), new Job()])).toBeTruthy()
+  })
+
+  test('Can eat every async apple', async () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule('eat', Apple, (_, a) => Promise.resolve(!Boolean(a.rotten)))
+    const user = new User()
+    const fine = new Apple()
+    const rotten = new Apple()
+    rotten.rotten = true
+    expect(await acl.every(user, 'eat', [fine, fine])).toBe(true)
+    expect(await acl.every(user, 'eat', [fine, rotten])).toBe(false)
+    expect(await acl.every(user, 'eat', [fine, new Apple()])).toBe(true)
+  })
+
+  test('User can eat some async apples', async () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule('eat', Apple, (_, a) => Promise.resolve(!Boolean(a.rotten)))
+    const user = new User()
+    const fine = new Apple()
+    const rotten = new Apple()
+    rotten.rotten = true
+    expect(await user.can.some('eat', [fine, rotten])).toBeTruthy()
+  })
+
+  test('User can eat every async apple', async () => {
+    const acl = new Acl()
+    acl.mixin(User)
+    acl.rule('eat', Apple, (_, a) => Promise.resolve(!Boolean(a.rotten)))
+    const user = new User()
+    const fine = new Apple()
+    const rotten = new Apple()
+    rotten.rotten = true
+    expect(await user.can.every('eat', [fine, rotten])).toBe(false)
+    expect(await user.can.every('eat', [fine, new Job()])).toBe(false)
+  })
+})
+
 describe('Registry and mapper', () => {
-  test('Can register a class', () => {
+  test('Can register a class', async () => {
     const acl = new Acl({ strict: true })
     class Foo {}
     acl.register(Foo, 'User')
     expect(acl.registry.has(Foo)).toBe(true)
     expect(acl.registry.get(Foo)).toBe('User')
     acl.rule('greet', Foo)
-    expect(acl.can({}, 'greet', new Foo())).toBe(true)
+    expect(await acl.can({}, 'greet', new Foo())).toBeTruthy()
   })
 
-  test('Custom mapper', () => {
+  test('Custom mapper', async () => {
     const acl = new Acl({ strict: true })
     const item = { type: 'Item' }
     acl.rule('lock', 'Item')
-    expect(acl.can.bind(acl, {}, 'lock', item)).toThrow(
+    expect(acl.can.bind(acl, {}, 'lock', item)).rejects.toThrow(
       'No rules for verb object "Object"',
     )
     acl.verbObjectMapper = (s: string | { [key: string]: any }) =>
       typeof s === 'string' ? s : s.type
-    expect(acl.can({}, 'lock', item)).toBe(true)
+    expect(await acl.can({}, 'lock', item)).toBeTruthy()
   })
 })
 
 describe('Reset and remove', () => {
-  test('Reset', () => {
+  test('Reset', async () => {
     const acl = new Acl()
     function JobPolicy(this: Policy) {
       this.view = true
@@ -213,53 +268,53 @@ describe('Reset and remove', () => {
     acl.rule('eat', 'Apple')
     acl.policy(JobPolicy, Job)
     expect(acl.registry.has(Job)).toBe(true)
-    expect(acl.can({}, 'view', job)).toBe(true)
-    expect(acl.can({}, 'eat', apple)).toBe(true)
+    expect(await acl.can({}, 'view', job)).toBeTruthy()
+    expect(await acl.can({}, 'eat', apple)).toBeTruthy()
     acl.reset()
     expect(acl.registry.has(Job)).toBe(false)
-    expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
+    expect(acl.can.bind(acl, {}, 'view', job)).rejects.toThrow(
       'No rules for verb object "Job"',
     )
-    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
+    expect(acl.can.bind(acl, {}, 'eat', apple)).rejects.toThrow(
       'No rules for verb object "Apple"',
     )
   })
 
-  test('Remove rules', () => {
+  test('Remove rules', async () => {
     const acl = new Acl()
     const apple = new Apple()
     acl.strict = true
     acl.rule('eat', 'Apple')
     acl.rule('discard', 'Apple')
-    expect(acl.can({}, 'eat', apple)).toBe(true)
-    expect(acl.can({}, 'discard', apple)).toBe(true)
+    expect(await acl.can({}, 'eat', apple)).toBeTruthy()
+    expect(await acl.can({}, 'discard', apple)).toBeTruthy()
     acl.removeRules(apple)
-    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
+    expect(acl.can.bind(acl, {}, 'eat', apple)).rejects.toThrow(
       'No rules for verb object "Apple"',
     )
-    expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow(
+    expect(acl.can.bind(acl, {}, 'discard', apple)).rejects.toThrow(
       'No rules for verb object "Apple"',
     )
   })
 
-  test('Remove rules, single', () => {
+  test('Remove rules, single', async () => {
     const acl = new Acl()
     const apple = new Apple()
     acl.strict = true
     acl.register(Apple, 'Apple')
     acl.rule('eat', 'Apple')
     acl.rule('discard', 'Apple')
-    expect(acl.can({}, 'eat', apple)).toBe(true)
-    expect(acl.can({}, 'discard', apple)).toBe(true)
+    expect(await acl.can({}, 'eat', apple)).toBeTruthy()
+    expect(await acl.can({}, 'discard', apple)).toBeTruthy()
     acl.removeRules(apple, 'discard')
     expect(acl.registry.has(Apple)).toBe(true)
-    expect(acl.can({}, 'eat', apple)).toBe(true)
-    expect(acl.can.bind(acl, {}, 'discard', apple)).toThrow(
+    expect(await acl.can({}, 'eat', apple)).toBeTruthy()
+    expect(acl.can.bind(acl, {}, 'discard', apple)).rejects.toThrow(
       'Unknown verb "discard"',
     )
   })
 
-  test('Remove policy', () => {
+  test('Remove policy', async () => {
     const acl = new Acl()
     function JobPolicy(this: Policy) {
       this.view = true
@@ -268,15 +323,15 @@ describe('Reset and remove', () => {
     acl.strict = true
     acl.register(Job, 'Job')
     acl.policy(JobPolicy, Job)
-    expect(acl.can({}, 'view', job)).toBe(true)
+    expect(await acl.can({}, 'view', job)).toBeTruthy()
     acl.removePolicy(job)
     expect(acl.registry.has(Job)).toBe(true)
-    expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
+    expect(await acl.can.bind(acl, {}, 'view', job)).rejects.toThrow(
       'No rules for verb object "Job"',
     )
   })
 
-  test('Remove all', () => {
+  test('Remove all', async () => {
     const acl = new Acl()
     function JobPolicy(this: Policy) {
       this.view = true
@@ -288,22 +343,22 @@ describe('Reset and remove', () => {
     acl.rule('eat', 'Apple')
     acl.policy(JobPolicy, Job)
     expect(acl.registry.has(Job)).toBe(true)
-    expect(acl.can({}, 'view', job)).toBe(true)
-    expect(acl.can({}, 'eat', apple)).toBe(true)
+    expect(await acl.can({}, 'view', job)).toBeTruthy()
+    expect(await acl.can({}, 'eat', apple)).toBeTruthy()
     acl.removeAll(job)
     acl.removeAll(apple)
     expect(acl.registry.has(Job)).toBe(true)
-    expect(acl.can.bind(acl, {}, 'view', job)).toThrow(
+    expect(await acl.can.bind(acl, {}, 'view', job)).rejects.toThrow(
       'No rules for verb object "Job"',
     )
-    expect(acl.can.bind(acl, {}, 'eat', apple)).toThrow(
+    expect(await acl.can.bind(acl, {}, 'eat', apple)).rejects.toThrow(
       'No rules for verb object "Apple"',
     )
   })
 })
 
 describe('More complex cases', () => {
-  test('Can create jobs', () => {
+  test('Can create jobs', async () => {
     const acl = new Acl()
     acl.mixin(User)
     const owner = new User()
@@ -347,14 +402,14 @@ describe('More complex cases', () => {
       )
     })
 
-    expect(owner.can('create', Job)).toBe(true)
-    expect(coworker.can('create', Job)).toBe(false)
+    expect(await owner.can('create', Job)).toBeTruthy()
+    expect(await coworker.can('create', Job)).toBeFalsy()
 
-    expect(owner.can('view', job)).toBe(true)
-    expect(coworker.can('view', job)).toBe(true)
+    expect(await owner.can('view', job)).toBeTruthy()
+    expect(await coworker.can('view', job)).toBeTruthy()
   })
 
-  test('Policy', () => {
+  test('Policy', async () => {
     const acl = new Acl()
     acl.mixin(User)
     const owner = new User()
@@ -394,24 +449,24 @@ describe('More complex cases', () => {
 
     acl.policy(policy, Job)
 
-    expect(owner.can('create', Job)).toBe(true)
-    expect(coworker.can('create', Job)).toBe(false)
+    expect(await owner.can('create', Job)).toBeTruthy()
+    expect(await coworker.can('create', Job)).toBeFalsy()
 
-    expect(owner.can('view', job)).toBe(true)
-    expect(coworker.can('view', job)).toBe(true)
+    expect(await owner.can('view', job)).toBeTruthy()
+    expect(await coworker.can('view', job)).toBeTruthy()
   })
 
-  test('Policy newed', () => {
+  test('Policy newed', async () => {
     const acl = new Acl()
     function JobPolicy(this: Policy) {
       this.view = true
     }
     acl.policy(JobPolicy, Job)
     expect(acl.policies.get('Job')).toBeInstanceOf(JobPolicy)
-    expect(acl.can({}, 'view', new Job())).toBe(true)
+    expect(await acl.can({}, 'view', new Job())).toBeTruthy()
   })
 
-  test('Policy overwrites rules', () => {
+  test('Policy overwrites rules', async () => {
     const acl = new Acl()
     function JobPolicy(this: Policy) {
       this.view = true
@@ -420,11 +475,11 @@ describe('More complex cases', () => {
     acl.rule('edit', 'Job')
     acl.policy(JobPolicy, Job)
     acl.rule('edit', 'Job')
-    expect(acl.can({}, 'edit', job)).toBe(false)
-    expect(acl.can({}, 'view', job)).toBe(true)
+    expect(await acl.can({}, 'edit', job)).toBeFalsy()
+    expect(await acl.can({}, 'view', job)).toBeTruthy()
   })
 
-  test('Policy beforeAll', () => {
+  test('Policy beforeAll', async () => {
     const acl = new Acl()
     function JobPolicy(this: Policy) {
       this.beforeAll = function (verb: string, user: any) {
@@ -441,11 +496,11 @@ describe('More complex cases', () => {
     }
     const job = new Job()
     acl.policy(JobPolicy, Job)
-    expect(acl.can({}, 'view', job)).toBe(true)
-    expect(acl.can({ isAdmin: true }, 'view', job)).toBe(true)
-    expect(acl.can({}, 'edit', job)).toBe(false)
-    expect(acl.can({ isAdmin: true }, 'edit', job)).toBe(true)
-    expect(acl.can({}, 'beLazy', job)).toBe(false)
-    expect(acl.can({ isAdmin: true }, 'beLazy', job)).toBe(true)
+    expect(await acl.can({}, 'view', job)).toBeTruthy()
+    expect(await acl.can({ isAdmin: true }, 'view', job)).toBeTruthy()
+    expect(await acl.can({}, 'edit', job)).toBeFalsy()
+    expect(await acl.can({ isAdmin: true }, 'edit', job)).toBeTruthy()
+    expect(await acl.can({}, 'beLazy', job)).toBeFalsy()
+    expect(await acl.can({ isAdmin: true }, 'beLazy', job)).toBeTruthy()
   })
 })

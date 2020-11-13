@@ -9,6 +9,20 @@ const assumeGlobal = (obj: any): boolean =>
   typeof obj === 'undefined' ||
   (typeof obj === 'function' && obj.name === '')
 
+const asyncSome = async (items: any[], test: Function): Promise<boolean> => {
+  for (let item of items) {
+    if (await test(item)) return true
+  }
+  return false
+}
+
+const asyncEvery = async (items: any[], test: Function): Promise<boolean> => {
+  for (let item of items) {
+    if (!(await test(item))) return false
+  }
+  return true
+}
+
 /**
  * Simple ACL library for the browser inspired by Laravel's guards and policies.
  *
@@ -158,12 +172,12 @@ class Acl {
    *
    * @access public
    */
-  can(
+  async can(
     user: Object,
     verb: Verb,
     verbObject: VerbObject | undefined = undefined,
     ...args: any[]
-  ) {
+  ): Promise<boolean> {
     verbObject = typeof verbObject === 'undefined' ? Acl.GlobalRule : verbObject
     const verbObjectName = this.verbObjectMapper(verbObject)
 
@@ -178,7 +192,7 @@ class Acl {
     }
 
     if (policy && typeof policy.beforeAll === 'function') {
-      const result = policy.beforeAll(
+      const result = await policy.beforeAll(
         verb,
         user,
         verbObject,
@@ -191,7 +205,9 @@ class Acl {
     }
 
     if (typeof rules[verb] === 'function') {
-      return Boolean(rules[verb](user, verbObject, verbObjectName, ...args))
+      return Boolean(
+        await rules[verb](user, verbObject, verbObjectName, ...args),
+      )
     }
 
     if (this.strict && typeof rules[verb] === 'undefined') {
@@ -209,8 +225,15 @@ class Acl {
    *
    * @access public
    */
-  some(user: object, verb: Verb, verbObjects: VerbObject[], ...args: any[]) {
-    return verbObjects.some((s) => this.can(user, verb, s, ...args))
+  async some(
+    user: object,
+    verb: Verb,
+    verbObjects: VerbObject[],
+    ...args: any[]
+  ) {
+    return asyncSome(verbObjects, (s: VerbObject) =>
+      this.can(user, verb, s, ...args),
+    )
   }
 
   /**
@@ -221,8 +244,15 @@ class Acl {
    *
    * @access public
    */
-  every(user: Object, verb: Verb, verbObjects: VerbObject[], ...args: any[]) {
-    return verbObjects.every((s) => this.can(user, verb, s, ...args))
+  async every(
+    user: Object,
+    verb: Verb,
+    verbObjects: VerbObject[],
+    ...args: any[]
+  ) {
+    return asyncEvery(verbObjects, (s: VerbObject) =>
+      this.can(user, verb, s, ...args),
+    )
   }
 
   /**
