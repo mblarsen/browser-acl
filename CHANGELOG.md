@@ -1,6 +1,6 @@
-## next
+## 1.0.1
 
-- internal changes
+- reexport types
 
 # 0.9.1
 

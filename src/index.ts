@@ -1,3 +1,4 @@
+export { Verb, VerbObject, Test, Policy, Options } from '../types'
 import { Verb, VerbObject, Test, Policy, Options } from '../types'
 
 type VerbObjectName = string | undefined
