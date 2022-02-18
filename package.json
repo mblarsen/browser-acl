@@ -29,8 +29,8 @@
     "build": "microbundle build --tsconfig ./tsconfig.json --name BrowserAcl",
     "test": "jest --config jest.config.json",
     "test:watch": "jest --config jest.config.json --watchAll",
-    "preversion": "npm run test",
-    "version": "npm run build && git add -A ./dist",
+    "preversion": "npm run build && npm run test",
+    "version": "git add -A ./dist",
     "postversion": "git push && git push --tags"
   },
   "devDependencies": {
