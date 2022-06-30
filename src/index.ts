@@ -20,11 +20,11 @@ const assumeGlobal = (obj: any): boolean =>
  * acl.rule('edit', Post, (user, post) => post.userId === user.id)
  * ```
  */
-class Acl {
+class Acl<U = any> {
   static GlobalRule = 'GLOBAL_RULE'
 
   strict: boolean
-  rules: Map<VerbObjectName, { [key: string]: Test }>
+  rules: Map<VerbObjectName, { [key: string]: Test<U> }>
   policies: Map<VerbObjectName | undefined, Policy>
   registry: WeakMap<Object, string>
 
@@ -60,10 +60,14 @@ class Acl {
    *
    * @access public
    */
-  rule(verbs: Verb | Verb[], verbObject: VerbObjectOrTest, test: Test = true) {
+  rule(
+    verbs: Verb | Verb[],
+    verbObject: VerbObjectOrTest,
+    test: Test<U> = true,
+  ) {
     let verbObject_: VerbObject
     if (assumeGlobal(verbObject)) {
-      test = typeof verbObject === 'undefined' ? true : (verbObject as Test)
+      test = typeof verbObject === 'undefined' ? true : (verbObject as Test<U>)
       verbObject_ = Acl.GlobalRule
     } else {
       verbObject_ = verbObject as VerbObject
