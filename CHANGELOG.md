@@ -3,6 +3,7 @@
 ## next
 
 - added lock file
+- update dev dependencies
 
 ## 1.0.2
 
