@@ -1,15 +1,21 @@
+# CHANGELOG
+
+## 1.0.2
+
+- allow the user value to be typed
+
 ## 1.0.1
 
 - reexport types
 
-# 0.9.1
+## 0.9.1
 
 - internal changes
 
-# 0.9.0
+## 0.9.0
 
 - breaking: The concept of `Subject` has been renamed `VerbObject`, because that is
-  actually what it is. The subject is always the user. if you are using the
+  actually what it is. The subject is always the user. If you are using the
   TypeScript types `Subject*` you need to use `VerbObject` instead
 - build: move types into index.ts to avoid special handling afterwards
 
