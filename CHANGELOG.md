@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## next
+
+- added lock file
+
 ## 1.0.2
 
 - allow the user value to be typed
